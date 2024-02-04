@@ -12,6 +12,6 @@ def chartit_view(request):
         series_options=[{'options': {'type': 'line', 'stacking': False}, 'terms': {'X': ['Y']}}],
         chart_options={'title': {'text': 'Django Chartit Line Chart'}}
     )
-
+	aaaa
     context = {'chart': chart}
     return render(request, 'chartit_template.html', context)
