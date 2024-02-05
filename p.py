@@ -15,3 +15,4 @@ def chartit_view(request):
 
     context = {'chart': chart}
     return render(request, 'chartit_template.html', context)
+#karam was here 
