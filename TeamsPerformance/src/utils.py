@@ -12,8 +12,10 @@ from datetime import timedelta
 from TeamsPerformance.src.match import Match
 from time import sleep
 from termcolor import colored
+import json
 
 DEBUG_MODE = True
+TEAMS = []
 
 URL = "http://google.com/"
 MAX_WAIT_TIME = 30
@@ -25,7 +27,7 @@ def debug_info(name,value):
         print(colored(f"{name}:: {value}","yellow"))
 
 league_date = datetime(2023, 8, 11)
-def get_date(web_elm):
+def _get_date(web_elm):
     info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__cmd")
     debug_info("info",info)
     if len(info) == 1:#for passed games
@@ -38,48 +40,72 @@ def get_date(web_elm):
         if "today" in date.lower():
             date = datetime.now().strftime('%d %b %y')
 
-    date = date.split(", ")[-1]
+    date = date.split(", ")[-1]#some date have day also (e.g. wed, <date>)
     if len(date.split(" ")) == 2:#if the format is d/m (without year) then we need to add the current year
         date += f" {datetime.now().year%1000}"
     #google issue§
     date = date.replace("Sept","Sep")
     time_info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__pm-infc")
+    debug_info("data_str",date)
     if len(time_info) and "TBD" not in time_info[CLK_IDX].text:
         return datetime.strptime(date + f" {time_info[CLK_IDX].text}", "%d %b %y %H:%M")
-    debug_info("data_str",date)
     return datetime.strptime(date, "%d %b %y")
 
 def web_elm_parser(web_elm):
-    print(type(web_elm))
-    match_dict = {}
-    teams = web_elm.find_elements(By.CLASS_NAME, "liveresults-sports-immersive__hide-element")
-    if not teams or '' == teams[0].text :
+    def get_competition_name(home: str , away: str) -> str:
+        #this class exists only for  champions league and local cup.
+        competition = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__lg-st-co")
+        if len(competition):
+            return competition[0].find_elements(By.XPATH, ".//span")[0].text
+        # friendly matches are never between teams in the same league (when the class doesn't exist the  match is league or friendly)
+        return "local league" if (home in TEAMS) and (away in TEAMS) else "friendly"
+
+    #returns home : str , away : str or none if no teams in this web elem
+    def get_teams() -> (str,str):
+        teams = web_elm.find_elements(By.CLASS_NAME, "liveresults-sports-immersive__hide-element")
+        if not teams or '' == teams[0].text:
+            return None,None
+        # teams
+        return teams[HOME_IDX].text, teams[AWAY_IDX].text
+
+    def get_result():
+        results = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__t-sc")
+        if results:
+            return (results[HOME_IDX].text, results[AWAY_IDX].text)
         return None
+
+    def get_date()->str:
+        info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__cmd")
+        debug_info("info", info)
+        if len(info) == 1:  # for passed games
+            date = info[0].find_element(By.XPATH, ".//span").text
+            if "yesterday" in date.lower():
+                date = (datetime.now() - timedelta(days=1)).strftime('%d %b %y')
+
+        else:  # for today or future games ()
+            date = web_elm.find_element(By.CLASS_NAME, "imspo_mt__date").text
+            if "today" in date.lower():
+                date = datetime.now().strftime('%d %b %y')
+
+        return date.split(", ")[-1]  # some date have day also (e.g. wed, <date>)
+
+    match_dict = {}
+
     #teams
-    match_dict["home"] = teams[HOME_IDX].text
-    match_dict["away"] = teams[AWAY_IDX].text
+    match_dict["home"], match_dict["away"] = get_teams()
+    if match_dict["home"] is None:
+        return None
+
     #result
-    results = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__t-sc")
-    if results:
-        match_dict["result"] = ((results[HOME_IDX].text),(results[AWAY_IDX].text))
-    else:
-        match_dict["result"] = None
+    match_dict["result"] = get_result()
 
     #date
-    date_object = get_date(web_elm)
-    match_dict["date"] = date_object
+    match_dict["date"] = get_date()
 
     #league
-    league = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__lg-st-co")
-    match_dict["league"] = "Local"
-    if len(league):
-        league = league[0].find_elements(By.XPATH, ".//span")[0].text
-        match_dict["league"] = league
-    #print("karam", match_dict["league"])
+    match_dict["league"] = get_competition_name(match_dict["home"], match_dict["away"])
 
     return match_dict
-
-
 
 def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
     if multiple:
@@ -91,6 +117,10 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
 
 
 def start_session(driver, league, team):
+    global TEAMS
+    with open("TeamsPerformance/static/teams.json", 'r') as f:
+        leagues_info = json.load(f)
+        TEAMS = leagues_info[league]["teams"]
     driver.get(URL)
     driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
