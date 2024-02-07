@@ -1,0 +1,138 @@
+<!-- chart_template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Chart Example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Form</title>
+    <style>
+        body {
+            background-image: url('{{ STATIC_URL }}/homebackground.jpg');
+            background-size: cover; /* Adjust the background size as needed */
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Keeps the background fixed while scrolling */
+            /* You can also set other background properties such as position, color, etc. */
+            /* background-position: center center; */
+            /* background-color: #f0f0f0; */
+
+            font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        select {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #4caf50;
+            background-color: #c2f0c5;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <form method="POST">
+        <h1>Football League Selector</h1>
+        {% csrf_token %}
+
+        <select name="leagues" id="leagues">
+            <option value="none">Choose League</option>
+        </select>
+
+        <br><br>
+
+        <select name="team_name" id="team_name" style="display: none;"></select>
+
+        <br><br>
+
+        <button id="calculate_button" type="submit" style="display: none;">CALCULATE</button>
+    </form>
+
+
+    <script>
+        let leagues_info = {{ leagues_info|safe }};
+        console.log(leagues_info);
+        let league = document.getElementById("leagues");
+        for (const league_key in leagues_info){
+            var option = document.createElement('option');
+            console.log(league_key);
+            option.value = league_key;
+            option.text = leagues_info[league_key].name;
+            console.log(league_key);
+            league.appendChild(option);
+        }
+        league.addEventListener("change", function() {
+            let league = document.getElementById('leagues');
+            var teamName = document.getElementById('team_name');
+            var calculateButton = document.getElementById('calculate_button');
+            if (leagues_info[league.value]["format"] === "swiss") {
+                calculateButton.style = "";
+                teamName.style = "display: none;";
+                var option = document.createElement('option');
+                option.value = " ";
+                option.text = " ";
+                teamName.appendChild(option);
+                teamName.value = " ";
+                return;
+            }
+            if (league.value === "none"){
+                //if no league is selected don't show any team (hide teams selector)
+                teamName.style = "display: none;";
+                calculateButton.style = "display: none;";
+                return;
+            }
+            calculateButton.style = "";
+            console.log(leagues_info);
+            console.log(league.value);
+            let teamsInLeagues = leagues_info[league.value]["teams"];
+            // console.log(event.value)
+            //to remove hidden attribute of the hidden team selector (disable style : none)
+            teamName.style = "";
+            //for clearing the previos option
+            teamName.innerHTML = "";
+            for (var i = 0; i < teamsInLeagues.length ; i++) {
+                var option = document.createElement('option');
+                option.value = teamsInLeagues[i];
+                option.text = teamsInLeagues[i];
+                console.log(option.value)
+                teamName.appendChild(option);
+            }
+        })
+
+    </script>
+</body>
+</html>
