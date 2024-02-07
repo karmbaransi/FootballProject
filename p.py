@@ -1,5 +1,5 @@
 #from django.shortcuts import render
-from chartit import DataPool, Chart
+#from chartit import DataPool, Chart
 
 def chartit_view(request):
     # Data for the example
