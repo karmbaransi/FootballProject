@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from TeamsPerformance.src.api import api_main
+from TeamsPerformance.src.api import *
 import json
 
 # Create your views here.
 def home(request):
-    with open("TeamsPerformance/static/teams.json", 'r') as f:
+    with open("TeamsPerformance/static/league_data.json", 'r') as f:
         leagues_info = json.load(f)
     if request.method == 'GET':
         return render(request, 'home.html', {'leagues_info':leagues_info})
@@ -16,6 +16,6 @@ def home(request):
 
 def performance(request, selected_league, selected_team):
     if request.method == "GET":
-        api_main(league=selected_league, team=selected_team)
+        get_matches(league=selected_league, team=selected_team)
         return render(request, 'performance.html', {'team': selected_team, 'league': selected_league})
 

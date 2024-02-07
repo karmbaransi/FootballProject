@@ -13,9 +13,10 @@ from TeamsPerformance.src.match import Match
 from time import sleep
 from termcolor import colored
 import json
-
+from TeamsPerformance.src.consts import *
+from TeamsPerformance.src.league import League
+import pdb
 DEBUG_MODE = True
-TEAMS = []
 
 URL = "http://google.com/"
 MAX_WAIT_TIME = 30
@@ -26,84 +27,60 @@ def debug_info(name,value):
     if DEBUG_MODE:
         print(colored(f"{name}:: {value}","yellow"))
 
-league_date = datetime(2023, 8, 11)
-def _get_date(web_elm):
-    info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__cmd")
-    debug_info("info",info)
-    if len(info) == 1:#for passed games
-        date = info[0].find_element(By.XPATH, ".//span").text
-        if "yesterday" in date.lower():
-            date = (datetime.now() - timedelta(days=1)).strftime('%d %b %y')
+def is_local_league(web_elm,home: str , away: str) -> bool:
+    #this class exists only for  champions league and local cup.
+    competition = web_elm.find_elements(By.CLASS_NAME, COMPETITION_CLASS_NAME)
+    if len(competition):
+        return False
+    # friendly matches are never between teams in the same league (when the class doesn't exist the  match is league or friendly)
+    return (home in league_info.teams) and (away in league_info.teams)
 
-    else:#for today or future games ()
-        date = web_elm.find_element(By.CLASS_NAME, "imspo_mt__date").text
-        if "today" in date.lower():
-            date = datetime.now().strftime('%d %b %y')
+def get_match_dict(web_elm):
+    debug_info("get_match", "called")
+    #check if this is an empty widget or the widget is a video
+    if len(web_elm.find_elements(By.CLASS_NAME, WIDGET_CLASS_NAME)) == 0:
+        return None
 
-    date = date.split(", ")[-1]#some date have day also (e.g. wed, <date>)
-    if len(date.split(" ")) == 2:#if the format is d/m (without year) then we need to add the current year
-        date += f" {datetime.now().year%1000}"
-    #google issue§
-    date = date.replace("Sept","Sep")
-    time_info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__pm-infc")
-    debug_info("data_str",date)
-    if len(time_info) and "TBD" not in time_info[CLK_IDX].text:
-        return datetime.strptime(date + f" {time_info[CLK_IDX].text}", "%d %b %y %H:%M")
-    return datetime.strptime(date, "%d %b %y")
-
-def web_elm_parser(web_elm):
-    def get_competition_name(home: str , away: str) -> str:
-        #this class exists only for  champions league and local cup.
-        competition = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__lg-st-co")
-        if len(competition):
-            return competition[0].find_elements(By.XPATH, ".//span")[0].text
-        # friendly matches are never between teams in the same league (when the class doesn't exist the  match is league or friendly)
-        return "local league" if (home in TEAMS) and (away in TEAMS) else "friendly"
-
-    #returns home : str , away : str or none if no teams in this web elem
+    #returns home : str , away : str or none if no teams in this web elem\
     def get_teams() -> (str,str):
-        teams = web_elm.find_elements(By.CLASS_NAME, "liveresults-sports-immersive__hide-element")
-        if not teams or '' == teams[0].text:
-            return None,None
+        teams = web_elm.find_elements(By.CLASS_NAME, TEAMS_INFO_CLASS_NAME)
+        debug_info("TEAMS",(teams[HOME_IDX].text, teams[AWAY_IDX].text))
         # teams
         return teams[HOME_IDX].text, teams[AWAY_IDX].text
 
     def get_result():
-        results = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__t-sc")
+        results = web_elm.find_elements(By.CLASS_NAME, RESULTS_INFO_CLASS_NAME)
         if results:
-            return (results[HOME_IDX].text, results[AWAY_IDX].text)
+            debug_info("RESULT", (results[HOME_IDX].text, results[AWAY_IDX].text))
+            return results[HOME_IDX].text, results[AWAY_IDX].text
         return None
 
     def get_date()->str:
-        info = web_elm.find_elements(By.CLASS_NAME, "imspo_mt__cmd")
+        info = web_elm.find_elements(By.CLASS_NAME, PASSED_DATE_INFO_CLASS_NAME)
         debug_info("info", info)
         if len(info) == 1:  # for passed games
-            date = info[0].find_element(By.XPATH, ".//span").text
-            if "yesterday" in date.lower():
-                date = (datetime.now() - timedelta(days=1)).strftime('%d %b %y')
+            date = info[0].find_element(By.XPATH, SPAN_NAME).text
+            if YESTERDAY_STR in date.lower():
+                date = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT_STR)
 
         else:  # for today or future games ()
-            date = web_elm.find_element(By.CLASS_NAME, "imspo_mt__date").text
-            if "today" in date.lower():
-                date = datetime.now().strftime('%d %b %y')
-
-        return date.split(", ")[-1]  # some date have day also (e.g. wed, <date>)
+            date = web_elm.find_element(By.CLASS_NAME, FUTURE_INFO_CLASS_NAME).text
+            if TODAY_STR in date.lower():
+                date = datetime.now().strftime(DATE_FORMAT_STR)
+        date = date.split(", ")[-1]
+        debug_info("date",date)
+        return date  # some date have day also (e.g. wed, <date>)
 
     match_dict = {}
 
     #teams
     match_dict["home"], match_dict["away"] = get_teams()
-    if match_dict["home"] is None:
-        return None
 
     #result
     match_dict["result"] = get_result()
 
     #date
     match_dict["date"] = get_date()
-
-    #league
-    match_dict["league"] = get_competition_name(match_dict["home"], match_dict["away"])
 
     return match_dict
 
@@ -117,10 +94,14 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
 
 
 def start_session(driver, league, team):
-    global TEAMS
-    with open("TeamsPerformance/static/teams.json", 'r') as f:
-        leagues_info = json.load(f)
-        TEAMS = leagues_info[league]["teams"]
+    global league_info
+    with open(LEAGUE_DATA_JSON_PATH, 'r') as f:
+        json_leagues_info = json.load(f)
+        league_info = League(teams=json_leagues_info[league]["teams"],
+                             start_date=json_leagues_info[league]["start_date"],
+                             end_date=json_leagues_info[league]["end_date"],
+                             name=league)
+
     driver.get(URL)
     driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
@@ -130,3 +111,53 @@ def start_session(driver, league, team):
 
 
     #login()
+
+def get_matches(league, team):
+    def get_local_matches():
+        counter = (len(league_info.teams) -1) * 2
+        sleep(1)
+        while counter:
+            web_elem =  driver.switch_to.active_element
+            match_dict = get_match_dict(web_elem)
+            if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
+                debug_info("counter",counter)
+                counter -= 1
+                yield match_dict
+            driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
+            sleep(0.1)#FIXME :: add load
+
+    def dates_fixer(matches : list) -> list:
+        #convert date for str to datetime obj
+        #matches are passed in descending order
+        matches = reversed(matches)
+        year = int(league_info.start_date.split()[2])
+        flag = True
+        for match in matches:
+            if "Jan" in match.date and flag:
+                year += 1
+                flag = False
+            day,month = match.date.split(" ")[0], match.date.split(" ")[1]
+            month = "Sep" if month == "Sept" else month
+            match.date = datetime.strptime(f"{day} {month} {year}",DATE_FORMAT_STR)
+            yield match
+
+
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
+    driver = webdriver.Chrome(options=options)
+    start_session(driver, league=league, team=team)
+
+    if team == " ":
+        see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_NOT_LOCAL_LEAGUES_XPATH)
+    else:
+        see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
+    see_more.send_keys(Keys.ENTER)
+
+    if team != " ":
+        to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
+    if DEBUG_MODE:
+        print(colored("\n\n\n\nMATCHES:","yellow"))
+        for match in to_ret:
+            print(match)
+    return to_ret
+    #FIXME :: add support for  champions , copa ......
