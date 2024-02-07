@@ -1,4 +1,4 @@
-from django.shortcuts import render
+#from django.shortcuts import render
 from chartit import DataPool, Chart
 
 def chartit_view(request):
