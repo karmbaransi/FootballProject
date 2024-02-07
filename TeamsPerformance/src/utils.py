@@ -39,6 +39,7 @@ def get_match_dict(web_elm):
     debug_info("get_match", "called")
     #check if this is an empty widget or the widget is a video
     if len(web_elm.find_elements(By.CLASS_NAME, WIDGET_CLASS_NAME)) == 0:
+        debug_info("dict is None", "")
         return None
 
     #returns home : str , away : str or none if no teams in this web elem\
@@ -64,12 +65,17 @@ def get_match_dict(web_elm):
                 date = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT_STR)
 
         else:  # for today or future games ()
-            date = web_elm.find_element(By.CLASS_NAME, FUTURE_INFO_CLASS_NAME).text
-            if TODAY_STR in date.lower():
+            date_elms = web_elm.find_elements(By.CLASS_NAME, FUTURE_INFO_CLASS_NAME)
+            if len(date_elms):
+                date = date_elms[0].text
+                if TODAY_STR in date.lower():
+                    date = datetime.now().strftime(DATE_FORMAT_STR)
+            else:#game is ongoing.
                 date = datetime.now().strftime(DATE_FORMAT_STR)
-        date = date.split(", ")[-1]
+        date = date.split(", ")[-1] # some date have day also (e.g. wed, <date>)
+        date = date.replace("Sept","Sep")
         debug_info("date",date)
-        return date  # some date have day also (e.g. wed, <date>)
+        return date
 
     match_dict = {}
 
@@ -105,7 +111,7 @@ def start_session(driver, league, team):
     driver.get(URL)
     driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
-    search_query = f"{team} matches in {league}"
+    search_query = f"{team} football matches in {league}"
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.ENTER)
 
@@ -115,16 +121,37 @@ def start_session(driver, league, team):
 def get_matches(league, team):
     def get_local_matches():
         counter = (len(league_info.teams) -1) * 2
-        sleep(1)
+        sleep(5)
         while counter:
+            driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
             if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 debug_info("counter",counter)
                 counter -= 1
                 yield match_dict
+            # sleep(0.1)#FIXME :: add load
+
+    def get_champions_matches():
+        start_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
+        sleep(5)
+        while True:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
-            sleep(0.1)#FIXME :: add load
+            web_elem = driver.switch_to.active_element
+            match_dict = get_match_dict(web_elem)
+            if match_dict is None:
+                continue
+            date_str = match_dict["date"]
+            if len(date_str.split()) < 3:
+                date_str = f'{date_str} {datetime.now().year % 1000}'
+            debug_info("date", date_str)
+            date = datetime.strptime(date_str,DATE_FORMAT_STR)
+            if date < start_date:
+                break
+            if match_dict:
+                if match_dict["home"] not in league_info.teams:
+                    league_info.teams.append(match_dict["home"])
+                yield match_dict
 
     def dates_fixer(matches : list) -> list:
         #convert date for str to datetime obj
@@ -153,11 +180,13 @@ def get_matches(league, team):
         see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
     see_more.send_keys(Keys.ENTER)
 
-    if team != " ":
+    if team != " ":#local
         to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
+    else:#champions
+        to_ret =  dates_fixer([Match(match_dict) for match_dict in get_champions_matches()])
     if DEBUG_MODE:
         print(colored("\n\n\n\nMATCHES:","yellow"))
         for match in to_ret:
-            print(match)
+            print(colored(match,"yellow"))
     return to_ret
     #FIXME :: add support for  champions , copa ......
