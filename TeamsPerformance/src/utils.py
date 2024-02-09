@@ -184,9 +184,5 @@ def get_matches(league, team):
         to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
     else:#champions
         to_ret =  dates_fixer([Match(match_dict) for match_dict in get_champions_matches()])
-    if DEBUG_MODE:
-        print(colored("\n\n\n\nMATCHES:","yellow"))
-        for match in to_ret:
-            print(colored(match,"yellow"))
     return to_ret
     #FIXME :: add support for  champions , copa ......
