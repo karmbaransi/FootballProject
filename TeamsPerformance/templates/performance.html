@@ -11,14 +11,15 @@
 
 <!-- Tab buttons -->
 <div class="tab-buttons">
-    <button onclick="showTab(0)">Gained Pointes</button>
+    <button onclick="showTab(0)">Gained Points</button>
     <button onclick="showTab(1)">Out Goals</button>
     <button onclick="showTab(2)">In Goals</button>
+    <button onclick="showTab(3)">Matches</button> <!-- New button for Matches tab -->
 </div>
 
 <!-- Graphs -->
 <div class="tab">
-    <h2>Gained Pointes</h2>
+    <h2>Gained Points</h2>
     <canvas id="gainedPGraph" width="400" height="200"></canvas>
 </div>
 
@@ -30,6 +31,11 @@
 <div class="tab">
     <h2>In Goals</h2>
     <canvas id="inGGraph" width="400" height="200"></canvas>
+</div>
+
+<div class="tab" style="display: none;"> <!-- New tab for Matches -->
+    <h2>Matches</h2>
+    <ul id="matchesList"></ul> <!-- Placeholder for matches list -->
 </div>
 
 <script>
@@ -57,10 +63,30 @@
             if (index === tabIndex) {
                 tab.style.display = 'block';
                 // Generate or update graph here based on the selected tab
-                generateGraph(tabIndex);
+                if (tabIndex === 3) {
+                    // Show matches tab
+                    showMatchesTab();
+                } else {
+                    generateGraph(tabIndex);
+                }
             } else {
                 tab.style.display = 'none';
             }
+        });
+    }
+
+    function showMatchesTab() {
+        // Dummy data for matches
+        let stats = {{ stats| safe }};
+        const matches = stats["matches"]; // Replace with your actual matches
+        const matchesList = document.getElementById('matchesList');
+        // Clear previous matches list
+        matchesList.innerHTML = '';
+        // Add matches to the list
+        matches.forEach(match => {
+            const matchItem = document.createElement('li');
+            matchItem.textContent = match;
+            matchesList.appendChild(matchItem);
         });
     }
 
