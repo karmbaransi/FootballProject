@@ -9,6 +9,7 @@ RESULTS_INFO_CLASS_NAME = "imspo_mt__t-sc"
 SPAN_NAME = ".//span"
 YESTERDAY_STR = "yesterday"
 TODAY_STR = "today"
+TOMORROW_STR = "tomorrow"
 DATE_FORMAT_STR = '%d %b %y'
 LEAGUE_DATA_JSON_PATH = "TeamsPerformance/static/league_data.json"
 SEE_MORE_NOT_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='LEAGUE_MATCHES']"

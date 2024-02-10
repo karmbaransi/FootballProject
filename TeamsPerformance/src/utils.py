@@ -61,15 +61,17 @@ def get_match_dict(web_elm):
         debug_info("info", info)
         if len(info) == 1:  # for passed games
             date = info[0].find_element(By.XPATH, SPAN_NAME).text
+            debug_info("get_date():date",date)
             if YESTERDAY_STR in date.lower():
                 date = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT_STR)
-
         else:  # for today or future games ()
             date_elms = web_elm.find_elements(By.CLASS_NAME, FUTURE_INFO_CLASS_NAME)
             if len(date_elms):
                 date = date_elms[0].text
                 if TODAY_STR in date.lower():
                     date = datetime.now().strftime(DATE_FORMAT_STR)
+                if TOMORROW_STR in date.lower():
+                    date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT_STR)
             else:#game is ongoing.
                 date = datetime.now().strftime(DATE_FORMAT_STR)
         date = date.split(", ")[-1] # some date have day also (e.g. wed, <date>)
