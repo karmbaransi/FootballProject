@@ -6,6 +6,58 @@
 <title>Football Project</title>
 <!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .tab-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .tab-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        transition: background-color 0.3s;
+    }
+
+    .tab-buttons button:hover {
+        background-color: #45a049;
+    }
+
+    .tab {
+        display: none;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .tab h2 {
+        margin-top: 0;
+    }
+
+    #matchesList {
+        list-style: none;
+        padding: 0;
+    }
+
+    #matchesList li {
+        margin-bottom: 10px;
+        padding: 15px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #matchesList li:hover {
+        background-color: #e0e0e0;
+        transition: background-color 0.3s ease;
+    }
+</style>
 </head>
 <body>
 
@@ -33,9 +85,9 @@
     <canvas id="inGGraph" width="400" height="200"></canvas>
 </div>
 
-<div class="tab" style="display: none;"> <!-- New tab for Matches -->
+<div class="tab">
     <h2>Matches</h2>
-    <ul id="matchesList"></ul> <!-- Placeholder for matches list -->
+    <ul id="matchesList" class="matches-list"></ul> <!-- Placeholder for matches list -->
 </div>
 
 <script>
