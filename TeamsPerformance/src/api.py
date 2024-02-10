@@ -18,11 +18,9 @@ def api_get_stats(league, team):
             return int(match_info.result[0]),int(match_info.result[1])
         else:
             return int(match_info.result[1]),int(match_info.result[0])
-
     stats = {"points_graph": [],"in_goals" : [],"out_goals": [], "matches":[]}#FIXME:: (names + add to consts)
     matches =  api_get_matches_results(league,team)
     curr_out_goals,curr_in_goals,curr_points = 0,0,0
-    debug_info("\n\nMatches",matches)
     for match in matches:
         debug_info("match info",match)
         if match.result is not None:
