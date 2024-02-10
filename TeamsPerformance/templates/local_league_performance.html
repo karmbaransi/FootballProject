@@ -7,9 +7,26 @@
 <!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    .back-tab {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 9999; /* Ensure it's above other elements */
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .back-tab:hover {
+        background-color: #45a049;
+    }
+
     .tab-buttons {
         display: flex;
         justify-content: center;
+        margin-top: 50px; /* Adjusted to make space for back tab */
         margin-bottom: 20px;
     }
 
@@ -57,9 +74,23 @@
         background-color: #e0e0e0;
         transition: background-color 0.3s ease;
     }
+
+    .header-text {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
 </style>
 </head>
 <body>
+
+<!-- Header text with passed arguments -->
+<div class="header-text">
+    <p>{{ team }} Stats - {{ league }}</p> <!-- Example of using passed argument -->
+</div>
+
+<!-- Back tab -->
+<a href="{%url 'home'%}" class="back-tab">Back</a>
 
 <!-- Tab buttons -->
 <div class="tab-buttons">
@@ -146,23 +177,26 @@
         let graphData = []; // Replace this with your actual data
         let graphElementId;
         let graph_type;
-        let Y_type;
+        let Y_type,graph_color;
         let stats = {{ stats| safe }};
         switch(tabIndex) {
             case 0:
                 graphElementId = 'gainedPGraph';
                 graph_type = "points_graph"
                 Y_type = "Points"
+                graph_color = "blue"
                 break;
             case 1:
                 graphElementId = 'outGGraph';
                 graph_type = "out_goals"
                 Y_type = "Goals"
+                graph_color = "green"
                 break;
             case 2:
                 graphElementId = 'inGGraph';
                 graph_type = "in_goals"
                 Y_type = "Goals"
+                graph_color = "red"
                 break;
             default:
                 break;
@@ -181,7 +215,7 @@
                 datasets: [{
                     label: Y_type,
                     data: graphData,
-                    borderColor: 'blue',
+                    borderColor: graph_color,
                     backgroundColor: 'transparent',
                     pointRadius: 5,
                     pointHoverRadius: 8

@@ -17,5 +17,8 @@ def home(request):
 def performance(request, selected_league, selected_team):
     if request.method == "GET":
         stats = api_get_stats(league=selected_league, team=selected_team)
-        return render(request, 'performance.html', {'team': selected_team, 'league': selected_league, 'stats': stats})
+        if selected_league == "UEFA Champions League":
+            return render(request, 'champion_league_performance.html', {'stats': stats})
+        else:
+            return render(request, 'local_league_performance.html', {'team': selected_team, 'league': selected_league, 'stats': stats})
 

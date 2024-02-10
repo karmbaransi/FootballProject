@@ -5,7 +5,7 @@ from TeamsPerformance.src.consts import *
 
 def api_get_matches_results(league,team):
     return get_matches(league, team)
-def api_get_stats(league, team):
+def api_get_local_league_stats(league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
         if int(match_info.result[0]) >  int(match_info.result[1]):
             return 3 if match_info.home == team else 0
@@ -36,4 +36,10 @@ def api_get_stats(league, team):
         debug_info("(p,o,i)",(curr_points,curr_out_goals,curr_in_goals))
     return stats
 
-
+def api_get_champion_league_stats():#FIXME
+    pass
+def api_get_stats(league, team):
+    if league == "UEFA Champions League":#FIXME
+        pass
+    else:
+        return api_get_local_league_stats(league, team)
