@@ -16,6 +16,6 @@ def home(request):
 
 def performance(request, selected_league, selected_team):
     if request.method == "GET":
-        api_get_stats(league=selected_league, team=selected_team)
-        return render(request, 'performance.html', {'team': selected_team, 'league': selected_league})
+        stats = api_get_stats(league=selected_league, team=selected_team)
+        return render(request, 'performance.html', {'team': selected_team, 'league': selected_league, 'stats': stats})
 

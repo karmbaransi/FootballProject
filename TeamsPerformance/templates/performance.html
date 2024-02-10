@@ -3,111 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Graph Tabs with Data Points</title>
+<title>Football Project</title>
+<!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  /* Style the tab content */
-  .tabcontent {
-    display: none;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-top: none;
-    height: 300px; /* Adjust height as needed */
-  }
-</style>
 </head>
 <body>
 
-<!-- Tab links -->
+<!-- Tab buttons -->
+<div class="tab-buttons">
+    <button onclick="showTab(0)">Gained Pointes</button>
+    <button onclick="showTab(1)">Out Goals</button>
+    <button onclick="showTab(2)">In Goals</button>
+</div>
+
+<!-- Graphs -->
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'graph1')">Graph 1</button>
-  <button class="tablinks" onclick="openTab(event, 'graph2')">Graph 2</button>
-  <button class="tablinks" onclick="openTab(event, 'graph3')">Graph 3</button>
+    <h2>Gained Pointes</h2>
+    <canvas id="gainedPGraph" width="400" height="200"></canvas>
 </div>
 
-<!-- Tab content -->
-<div id="graph1" class="tabcontent" style="display:block;">
-  <h3>Graph 1</h3>
-  <canvas id="graph1_canvas"></canvas>
+<div class="tab">
+    <h2>Out Goals</h2>
+    <canvas id="outGGraph" width="400" height="200"></canvas>
 </div>
 
-<div id="graph2" class="tabcontent">
-  <h3>Graph 2</h3>
-  <canvas id="graph2_canvas"></canvas>
-</div>
-
-<div id="graph3" class="tabcontent">
-  <h3>Graph 3</h3>
-  <canvas id="graph3_canvas"></canvas>
+<div class="tab">
+    <h2>In Goals</h2>
+    <canvas id="inGGraph" width="400" height="200"></canvas>
 </div>
 
 <script>
-// Keep track of active tab
-var activeTab = 'graph1';
-
-// Function to open tabs
-function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    if (tabcontent[i].id === tabName) {
-      tabcontent[i].style.display = "block";
-    } else {
-      tabcontent[i].style.display = "none";
-    }
-  }
-  activeTab = tabName;
-}
-
-// Function to draw graphs as points with tooltips
-function drawGraph(canvasId, data) {
-  var ctx = document.getElementById(canvasId).getContext('2d');
-  var myChart = new Chart(ctx, {
-    type: 'scatter',
-    data: {
-      datasets: [{
-        label: 'Graph Points',
-        data: data,
-        backgroundColor: 'rgba(255, 99, 132, 0.5)', // Adjust color as needed
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        xAxes: [{
-          type: 'linear',
-          position: 'bottom'
-        }]
-      },
-      tooltips: {
-        callbacks: {
-          label: function(tooltipItem, data) {
-            var label = data.datasets[tooltipItem.datasetIndex].label || '';
-            if (label) {
-              label += ': ';
-            }
-            label += '(' + tooltipItem.xLabel + ', ' + tooltipItem.yLabel + ')';
-            return label;
-          }
+    // JavaScript for tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    const chartOptions = {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'day'
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Points'
+                }
+            }]
         }
-      }
+    };
+
+    function showTab(tabIndex) {
+        tabs.forEach((tab, index) => {
+            if (index === tabIndex) {
+                tab.style.display = 'block';
+                // Generate or update graph here based on the selected tab
+                generateGraph(tabIndex);
+            } else {
+                tab.style.display = 'none';
+            }
+        });
     }
-  });
-}
 
-// Sample data for graphs
-var graph1_data = [{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 8}, {x: 4, y: 12}];
-var graph2_data = [{x: 1, y: 8}, {x: 2, y: 6}, {x: 3, y: 9}, {x: 4, y: 11}];
-var graph3_data = [{x: 1, y: 3}, {x: 2, y: 7}, {x: 3, y: 5}, {x: 4, y: 10}];
+    function generateGraph(tabIndex) {
+        let graphData = []; // Replace this with your actual data
+        let graphElementId;
+        let graph_type;
+        let Y_type;
+        let stats = {{ stats| safe }};
+        switch(tabIndex) {
+            case 0:
+                graphElementId = 'gainedPGraph';
+                graph_type = "points_graph"
+                Y_type = "Points"
+                break;
+            case 1:
+                graphElementId = 'outGGraph';
+                graph_type = "out_goals"
+                Y_type = "Goals"
+                break;
+            case 2:
+                graphElementId = 'inGGraph';
+                graph_type = "in_goals"
+                Y_type = "Goals"
+                break;
+            default:
+                break;
+        }
+        for (var i = 0; i < stats[graph_type].length ; i++){
+            graphData.push({x: stats[graph_type][i]["x"], y: stats[graph_type][i]["y"]})
+        }
+        const ctx = document.getElementById(graphElementId).getContext('2d');
+        // Clear previous chart if it exists
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+        window.myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Points',
+                    data: graphData,
+                    borderColor: 'blue',
+                    backgroundColor: 'transparent',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: chartOptions
+        });
+    }
 
-// Draw graphs
-drawGraph('graph1_canvas', graph1_data);
-drawGraph('graph2_canvas', graph2_data);
-drawGraph('graph3_canvas', graph3_data);
-
-// Show previously active tab
-openTab(null, activeTab);
+    // Display first tab by default
+    showTab(0);
 </script>
 
 </body>
