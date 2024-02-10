@@ -64,6 +64,8 @@ def get_match_dict(web_elm):
             debug_info("get_date():date",date)
             if YESTERDAY_STR in date.lower():
                 date = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT_STR)
+            if TODAY_STR in date.lower():
+                date = datetime.now().strftime(DATE_FORMAT_STR)
         else:  # for today or future games ()
             date_elms = web_elm.find_elements(By.CLASS_NAME, FUTURE_INFO_CLASS_NAME)
             if len(date_elms):
