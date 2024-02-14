@@ -20,5 +20,5 @@ from TeamsPerformance import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name="home"),
-    path('<str:selected_sport>/<str:selected_league>/<str:selected_team>', views.performance, name='performance')
+    path('<str:selected_season>/<str:selected_sport>/<str:selected_league>/<str:selected_team>', views.performance, name='performance')
 ]

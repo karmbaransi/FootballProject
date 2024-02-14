@@ -75,6 +75,12 @@
 
         <br><br>
 
+        <select name="season" id="season" style="display: none;">
+            <option value="none">Choose Season</option>
+        </select>
+
+        <br><br>
+
         <select name="leagues" id="leagues" style="display: none;">
             <option value="none">Choose League</option>
         </select>
@@ -104,20 +110,49 @@
 
         sportsDropdown.addEventListener("change", function() {
             let sport = sportsDropdown.value;
+            let seasonsDropdown = document.getElementById('season')
             let leaguesDropdown = document.getElementById('leagues');
             let teamNameDropdown = document.getElementById('team_name');
             let calculateButton = document.getElementById('calculate_button');
 
             if (sport !== "none") {
+                seasonsDropdown.style = "";
+                seasonsDropdown.innerHTML = '<option value="none">Choose Season</option>';
+                teamNameDropdown.style = "display: none;";
+                calculateButton.style = "display: none;";
+
+                for (const season in sports[sport]) {
+                    console.log(season);
+                    var option = document.createElement('option');
+                    option.value = season;
+                    option.text = season;
+                    seasonsDropdown.appendChild(option);
+                }
+            } else {
+                seasonsDropdown.style = "display: none;"
+                leaguesDropdown.style = "display: none;";
+                teamNameDropdown.style = "display: none;";
+                calculateButton.style = "display: none;";
+            }
+        });
+
+        document.getElementById("season").addEventListener("change", function () {
+            let sport = sportsDropdown.value;
+            let season = document.getElementById('season').value;
+            let leaguesDropdown = document.getElementById('leagues');
+            let teamNameDropdown = document.getElementById('team_name');
+            let calculateButton = document.getElementById('calculate_button');
+
+            if (season !== "none") {
                 leaguesDropdown.style = "";
                 leaguesDropdown.innerHTML = '<option value="none">Choose League</option>';
                 teamNameDropdown.style = "display: none;";
                 calculateButton.style = "display: none;";
 
-                for (const league in sports[sport].leagues) {
+                for (const league in sports[sport][season].leagues) {
                     var option = document.createElement('option');
                     option.value = league;
-                    option.text = sports[sport].leagues[league].name;
+                    option.text = league;
                     leaguesDropdown.appendChild(option);
                 }
             } else {
@@ -125,10 +160,12 @@
                 teamNameDropdown.style = "display: none;";
                 calculateButton.style = "display: none;";
             }
+
         });
 
         document.getElementById("leagues").addEventListener("change", function() {
             let sport = sportsDropdown.value;
+            let season = document.getElementById('season').value;
             let league = document.getElementById('leagues').value;
             let teamNameDropdown = document.getElementById('team_name');
             let calculateButton = document.getElementById('calculate_button');
@@ -142,7 +179,7 @@
             calculateButton.style = "";
             teamNameDropdown.style = "";
 
-            let teamsInLeagues = sports[sport].leagues[league].teams;
+            let teamsInLeagues = sports[sport][season].leagues[league].teams;
 
             for (var i = 0; i < teamsInLeagues.length; i++) {
                 var option = document.createElement('option');
