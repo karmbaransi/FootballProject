@@ -99,7 +99,7 @@
             let league = document.getElementById('leagues');
             var teamName = document.getElementById('team_name');
             var calculateButton = document.getElementById('calculate_button');
-            if (leagues_info[league.value]["format"] === "swiss") {
+            if (league.value != "none" && leagues_info[league.value]["format"] === "swiss") {
                 calculateButton.style = "";
                 teamName.style = "display: none;";
                 var option = document.createElement('option');
