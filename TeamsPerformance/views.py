@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from TeamsPerformance.src.api import *
 import json
+from .models import Match
 
 # Create your views here.
 def home(request):
