@@ -1,4 +1,5 @@
 {
+  "Football": {
     "Laliga": {
         "format": "points",
         "name": "Laliga",
@@ -132,6 +133,32 @@
         "start_date": "19 Sep 23",
         "end_date": "1 Jun 24"
     }
-}
+  },
+  "Basketball": {
+    "NBA Western": {
+        "format": "points",
+        "name": "NBA Western",
+        "teams" : [
+                    "Timberwolves" ,
+                    "Thunder",
+                    "Clippers",
+                    "Nuggets",
+                    "Suns",
+                    "Pelicans",
+                    "Mavericks",
+                    "Kings",
+                    "Lakers",
+                    "Warriors",
+                    "Jazz",
+                    "Rockets",
+                    "Grizzlies",
+                    "Trail Blazers",
+                    "Spurs"
 
+        ],
+        "start_date": "11 Aug 23",
+        "end_date": "26 May 24"
+    }
+  }
+}
 
