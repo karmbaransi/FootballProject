@@ -69,7 +69,13 @@
         <h1>Football League Selector</h1>
         {% csrf_token %}
 
-        <select name="leagues" id="leagues">
+        <select name="sports" id="sports">
+            <option value="none">Choose Sport</option>
+        </select>
+
+        <br><br>
+
+        <select name="leagues" id="leagues" style="display: none;">
             <option value="none">Choose League</option>
         </select>
 
@@ -85,53 +91,66 @@
 
     <script>
         let leagues_info = {{ leagues_info|safe }};
-        console.log(leagues_info);
-        let league = document.getElementById("leagues");
-        for (const league_key in leagues_info){
+        let sports = leagues_info["sports"];
+        let sportsDropdown = document.getElementById("sports");
+        for (const sport in sports) {
+            console.log("ssss");
             var option = document.createElement('option');
-            console.log(league_key);
-            option.value = league_key;
-            option.text = leagues_info[league_key].name;
-            console.log(league_key);
-            league.appendChild(option);
+            option.value = sport;
+            option.text = sport.charAt(0).toUpperCase() + sport.slice(1); // Capitalize first letter
+            sportsDropdown.appendChild(option);
         }
-        league.addEventListener("change", function() {
-            let league = document.getElementById('leagues');
-            var teamName = document.getElementById('team_name');
-            var calculateButton = document.getElementById('calculate_button');
-            if (league.value != "none" && leagues_info[league.value]["format"] === "swiss") {
-                calculateButton.style = "";
-                teamName.style = "display: none;";
-                var option = document.createElement('option');
-                option.value = " ";
-                option.text = " ";
-                teamName.appendChild(option);
-                teamName.value = " ";
-                return;
+
+
+        sportsDropdown.addEventListener("change", function() {
+            let sport = sportsDropdown.value;
+            let leaguesDropdown = document.getElementById('leagues');
+            let teamNameDropdown = document.getElementById('team_name');
+            let calculateButton = document.getElementById('calculate_button');
+
+            if (sport !== "none") {
+                leaguesDropdown.style = "";
+                leaguesDropdown.innerHTML = '<option value="none">Choose League</option>';
+                teamNameDropdown.style = "display: none;";
+                calculateButton.style = "display: none;";
+
+                for (const league in sports[sport].leagues) {
+                    var option = document.createElement('option');
+                    option.value = league;
+                    option.text = sports[sport].leagues[league].name;
+                    leaguesDropdown.appendChild(option);
+                }
+            } else {
+                leaguesDropdown.style = "display: none;";
+                teamNameDropdown.style = "display: none;";
+                calculateButton.style = "display: none;";
             }
-            if (league.value === "none"){
-                //if no league is selected don't show any team (hide teams selector)
-                teamName.style = "display: none;";
+        });
+
+        document.getElementById("leagues").addEventListener("change", function() {
+            let sport = sportsDropdown.value;
+            let league = document.getElementById('leagues').value;
+            let teamNameDropdown = document.getElementById('team_name');
+            let calculateButton = document.getElementById('calculate_button');
+
+            if (league === "none") {
+                teamNameDropdown.style = "display: none;";
                 calculateButton.style = "display: none;";
                 return;
             }
+
             calculateButton.style = "";
-            console.log(leagues_info);
-            console.log(league.value);
-            let teamsInLeagues = leagues_info[league.value]["teams"];
-            // console.log(event.value)
-            //to remove hidden attribute of the hidden team selector (disable style : none)
-            teamName.style = "";
-            //for clearing the previos option
-            teamName.innerHTML = "";
-            for (var i = 0; i < teamsInLeagues.length ; i++) {
+            teamNameDropdown.style = "";
+
+            let teamsInLeagues = sports[sport].leagues[league].teams;
+
+            for (var i = 0; i < teamsInLeagues.length; i++) {
                 var option = document.createElement('option');
                 option.value = teamsInLeagues[i];
                 option.text = teamsInLeagues[i];
-                console.log(option.value)
-                teamName.appendChild(option);
+                teamNameDropdown.appendChild(option);
             }
-        })
+        });
 
     </script>
 </body>

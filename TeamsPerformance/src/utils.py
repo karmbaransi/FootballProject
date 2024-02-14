@@ -103,10 +103,11 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
         EC.presence_of_element_located((by_elm, elm)))
 
 
-def start_session(driver, league, team):
+def start_session(driver,sport, league, team):
     global league_info
     with open(LEAGUE_DATA_JSON_PATH, 'r') as f:
-        json_leagues_info = json.load(f)
+        json_sports_info = json.load(f)
+        json_leagues_info = json_sports_info["sports"][sport]["leagues"]
         league_info = League(teams=json_leagues_info[league]["teams"],
                              start_date=json_leagues_info[league]["start_date"],
                              end_date=json_leagues_info[league]["end_date"],
@@ -115,14 +116,14 @@ def start_session(driver, league, team):
     driver.get(URL)
     driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
-    search_query = f"{team} football matches in {league}"
+    search_query = f"{team} {sport} matches in {league}"
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.ENTER)
 
 
     #login()
 
-def get_matches(league, team):
+def get_matches(sport, league, team):
     def get_local_matches():
         counter = (len(league_info.teams) -1) * 2
         sleep(5)
@@ -135,27 +136,6 @@ def get_matches(league, team):
                 counter -= 1
                 yield match_dict
             # sleep(0.1)#FIXME :: add load
-
-    def get_champions_matches():
-        start_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
-        sleep(5)
-        while True:
-            driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
-            web_elem = driver.switch_to.active_element
-            match_dict = get_match_dict(web_elem)
-            if match_dict is None:
-                continue
-            date_str = match_dict["date"]
-            if len(date_str.split()) < 3:
-                date_str = f'{date_str} {datetime.now().year % 1000}'
-            debug_info("date", date_str)
-            date = datetime.strptime(date_str,DATE_FORMAT_STR)
-            if date < start_date:
-                break
-            if match_dict:
-                if match_dict["home"] not in league_info.teams:
-                    league_info.teams.append(match_dict["home"])
-                yield match_dict
 
     def dates_fixer(matches : list) -> list:
         #convert date for str to datetime obj
@@ -176,17 +156,11 @@ def get_matches(league, team):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
     driver = webdriver.Chrome(options=options)
-    start_session(driver, league=league, team=team)
+    start_session(driver, sport=sport, league=league, team=team)
 
-    if team == " ":
-        see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_NOT_LOCAL_LEAGUES_XPATH)
-    else:
-        see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
+
+    see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
     see_more.send_keys(Keys.ENTER)
 
-    if team != " ":#local
-        to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
-    else:#champions
-        to_ret =  dates_fixer([Match(match_dict) for match_dict in get_champions_matches()])
+    to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
     return to_ret
-    #FIXME :: add support for  champions , copa ......
