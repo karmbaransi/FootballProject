@@ -3,9 +3,9 @@ from TeamsPerformance.src.utils import debug_info
 from TeamsPerformance.src.match import Match
 from TeamsPerformance.src.consts import *
 
-def api_get_matches_results(sport,league,team):#FIXME add checkup in the DB
-    return get_matches(sport,league, team)
-def api_get_local_league_stats(sport,league, team):
+def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
+    return get_matches(season,sport,league, team)
+def api_get_local_league_stats(season,sport,league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
         if int(match_info.result[0]) >  int(match_info.result[1]):
             return 3 if match_info.home == team else 0
@@ -19,7 +19,7 @@ def api_get_local_league_stats(sport,league, team):
         else:
             return int(match_info.result[1]),int(match_info.result[0])
     stats = {"points_graph": [],"in_goals" : [],"out_goals": [], "matches":[]}#FIXME:: (names + add to consts)
-    matches =  api_get_matches_results(sport,league,team)
+    matches =  api_get_matches_results(season,sport,league,team)
     curr_out_goals,curr_in_goals,curr_points = 0,0,0
     for match in matches:
         debug_info("match info",match)
@@ -36,5 +36,5 @@ def api_get_local_league_stats(sport,league, team):
         debug_info("(p,o,i)",(curr_points,curr_out_goals,curr_in_goals))
     return stats
 
-def api_get_stats(sport, league, team):
-    return api_get_local_league_stats(sport, league, team)
+def api_get_stats(season,sport, league, team):
+    return api_get_local_league_stats(season,sport, league, team)

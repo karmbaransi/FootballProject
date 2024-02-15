@@ -15,6 +15,7 @@ from termcolor import colored
 import json
 from TeamsPerformance.src.consts import *
 from TeamsPerformance.src.league import League
+from TeamsPerformance.src.datefixer import DateFixer
 import pdb
 DEBUG_MODE = True
 
@@ -22,6 +23,7 @@ URL = "http://google.com/"
 MAX_WAIT_TIME = 30
 HOME_IDX =  0
 AWAY_IDX = CLK_IDX = 1
+date_fixer = DateFixer()
 
 def debug_info(name,value):
     if DEBUG_MODE:
@@ -79,7 +81,7 @@ def get_match_dict(web_elm):
         date = date.split(", ")[-1] # some date have day also (e.g. wed, <date>)
         date = date.replace("Sept","Sep")
         debug_info("date",date)
-        return date
+        return date_fixer.fix_Date(date)
 
     match_dict = {}
 
@@ -123,34 +125,24 @@ def start_session(driver,sport, league, team):
 
     #login()
 
-def get_matches(sport, league, team):
+def get_matches(season, sport, league, team):
     def get_local_matches():
         counter = (len(league_info.teams) -1) * 2
         sleep(5)
+        end_date = datetime.strptime(league_info.end_date,DATE_FORMAT_STR)
         while counter:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
+            if match_dict["date"] > end_date:
+                continue
             if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 debug_info("counter",counter)
                 counter -= 1
                 yield match_dict
             # sleep(0.1)#FIXME :: add load
 
-    def dates_fixer(matches : list) -> list:
-        #convert date for str to datetime obj
-        #matches are passed in descending order
-        matches = reversed(matches)
-        year = int(league_info.start_date.split()[2])
-        flag = True
-        for match in matches:
-            if "Jan" in match.date and flag:
-                year += 1
-                flag = False
-            day,month = match.date.split(" ")[0], match.date.split(" ")[1]
-            month = "Sep" if month == "Sept" else month
-            match.date = datetime.strptime(f"{day} {month} {year}",DATE_FORMAT_STR)
-            yield match
+
 
 
     options = webdriver.ChromeOptions()
@@ -162,5 +154,5 @@ def get_matches(sport, league, team):
     see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
     see_more.send_keys(Keys.ENTER)
 
-    to_ret = dates_fixer([Match(match_dict) for match_dict in get_local_matches()])
+    to_ret = [Match(match_dict) for match_dict in get_local_matches()]
     return to_ret
