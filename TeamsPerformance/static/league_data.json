@@ -1,7 +1,7 @@
 {
     "sports": {
         "Football": {
-            "23/24" : {
+            "23_24" : {
                 "leagues": {
                     "Laliga": {
                         "format": "points",
@@ -141,7 +141,7 @@
                     }
                 }
             },
-            "22/23" : {
+            "22_23" : {
                 "leagues": {
                     "Laliga": {
                         "format": "points",
@@ -283,7 +283,7 @@
             }
         },
         "Basketball": {
-            "23/24":{
+            "23_24":{
                 "leagues": {
                     "NBA": {
                         "format": "points",

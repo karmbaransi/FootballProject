@@ -80,8 +80,10 @@ def get_match_dict(web_elm):
                 date = datetime.now().strftime(DATE_FORMAT_STR)
         date = date.split(", ")[-1] # some date have day also (e.g. wed, <date>)
         date = date.replace("Sept","Sep")
+        date_obj = date_fixer.fix_Date(date)
         debug_info("date",date)
-        return date_fixer.fix_Date(date)
+        debug_info("date_obj",date_obj)
+        return date_obj
 
     match_dict = {}
 
@@ -105,11 +107,11 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
         EC.presence_of_element_located((by_elm, elm)))
 
 
-def start_session(driver,sport, league, team):
+def start_session(driver,season, sport, league, team):
     global league_info
     with open(LEAGUE_DATA_JSON_PATH, 'r') as f:
         json_sports_info = json.load(f)
-        json_leagues_info = json_sports_info["sports"][sport]["leagues"]
+        json_leagues_info = json_sports_info["sports"][sport][season]["leagues"]
         league_info = League(teams=json_leagues_info[league]["teams"],
                              start_date=json_leagues_info[league]["start_date"],
                              end_date=json_leagues_info[league]["end_date"],
@@ -134,7 +136,7 @@ def get_matches(season, sport, league, team):
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
-            if match_dict["date"] > end_date:
+            if match_dict and match_dict["date"] > end_date:
                 continue
             if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 debug_info("counter",counter)
@@ -148,11 +150,11 @@ def get_matches(season, sport, league, team):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
     driver = webdriver.Chrome(options=options)
-    start_session(driver, sport=sport, league=league, team=team)
+    start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
     see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
     see_more.send_keys(Keys.ENTER)
 
-    to_ret = [Match(match_dict) for match_dict in get_local_matches()]
+    to_ret = reversed([Match(match_dict) for match_dict in get_local_matches()])
     return to_ret

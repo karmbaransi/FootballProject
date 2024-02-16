@@ -5,11 +5,11 @@ from TeamsPerformance.src.consts import *
 #this class solves year issue
 class DateFixer:
     def __init__(self):
-        self.year = datetime.now().year % 1000
+        self.year = LAST_WIDGET_YEAR
         self.jan_pass_flag = False
     def fix_Date(self,date : str):
             self.jan_pass_flag =  ("jan" in date.lower())
-            if "jan" not in date.lower():
+            if "jan" not in date.lower() and self.jan_pass_flag:
                 self.jan_pass_flag = False
                 self.year -= 1
             if len(date.split()) != 3:
