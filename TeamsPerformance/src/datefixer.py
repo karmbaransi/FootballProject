@@ -8,7 +8,8 @@ class DateFixer:
         self.year = LAST_WIDGET_YEAR
         self.jan_pass_flag = False
     def fix_Date(self,date : str):
-            self.jan_pass_flag =  ("jan" in date.lower())
+            if "jan" in date.lower():
+                self.jan_pass_flag = True
             if "jan" not in date.lower() and self.jan_pass_flag:
                 self.jan_pass_flag = False
                 self.year -= 1
