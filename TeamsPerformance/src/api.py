@@ -1,4 +1,4 @@
-from TeamsPerformance.src.utils import get_matches
+from TeamsPerformance.src.utils import get_matches, get_league_info
 from TeamsPerformance.src.utils import debug_info
 from TeamsPerformance.src.match import Match
 from TeamsPerformance.src.consts import *
@@ -7,12 +7,13 @@ def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the 
     return get_matches(season,sport,league, team)
 def api_get_local_league_stats(season,sport,league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
+        league_info = get_league_info()
         if int(match_info.result[0]) >  int(match_info.result[1]):
-            return 3 if match_info.home == team else 0
+            return league_info.point_rules["win"] if match_info.home == team else league_info.point_rules["lose"]
         elif int(match_info.result[0]) <  int(match_info.result[1]):
-            return 0 if match_info.home == team else 3
+            return league_info.point_rules["lose"] if match_info.home == team else league_info.point_rules["win"]
         else:#draw
-            return 1
+            return league_info.point_rules["draw"]
     def get_out_in_goals(match_info : Match):#FIXME:: penalties support
         if match_info.home == team:
             return int(match_info.result[0]),int(match_info.result[1])

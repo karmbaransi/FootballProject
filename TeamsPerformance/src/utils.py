@@ -23,7 +23,7 @@ URL = "http://google.com/"
 MAX_WAIT_TIME = 30
 HOME_IDX =  0
 AWAY_IDX = CLK_IDX = 1
-date_fixer = DateFixer()
+
 
 def debug_info(name,value):
     if DEBUG_MODE:
@@ -38,6 +38,7 @@ def is_local_league(web_elm,home: str , away: str) -> bool:
     return (home in league_info.teams) and (away in league_info.teams)
 
 def get_match_dict(web_elm):
+    date_fixer = DateFixer()
     debug_info("get_match", "called")
     #check if this is an empty widget or the widget is a video
     if len(web_elm.find_elements(By.CLASS_NAME, WIDGET_CLASS_NAME)) == 0:
@@ -115,7 +116,7 @@ def start_session(driver,season, sport, league, team):
         league_info = League(teams=json_leagues_info[league]["teams"],
                              start_date=json_leagues_info[league]["start_date"],
                              end_date=json_leagues_info[league]["end_date"],
-                             name=league)
+                             name=league, point_rules= json_sports_info["points"][sport])
 
     driver.get(URL)
     driver.maximize_window()
@@ -159,3 +160,6 @@ def get_matches(season, sport, league, team):
 
     to_ret = reversed([Match(match_dict) for match_dict in get_local_matches()])
     return to_ret
+
+def get_league_info():
+    return league_info

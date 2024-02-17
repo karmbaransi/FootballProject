@@ -289,7 +289,21 @@
                         "format": "points",
                         "name": "NBA",
                         "teams": [
-                            "Lakers"
+                            "Lakers",
+                            "Suns",
+                            "Kings",
+                            "Clippers",
+                            "Warriors",
+                            "Pelicans",
+                            "Spurs",
+                            "Nuggets",
+                            "Rockets",
+                            "Trail Blazers",
+                            "Thunders",
+                            "Grizzlies",
+                            "Timberwolves",
+                            "Jazz",
+                            "Mavericks"
                         ],
                         "start_date": "24 Oct 23",
                         "end_date": "14 Apr 24"
@@ -297,5 +311,9 @@
                 }
             }
         }
+    },
+    "points": {
+        "Football": {"win":  3, "draw":  1, "lose": 0},
+        "Basketball": {"win":  2, "draw":  null, "lose": 1}
     }
 }
