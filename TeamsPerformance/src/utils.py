@@ -58,7 +58,7 @@ def get_match_dict(web_elm):
             return results[HOME_IDX].text, results[AWAY_IDX].text
         return None
 
-    def get_date()->str:
+    def get_date():
         info = web_elm.find_elements(By.CLASS_NAME, PASSED_DATE_INFO_CLASS_NAME)
         debug_info("info", info)
         if len(info) == 1:  # for passed games
@@ -129,18 +129,19 @@ def start_session(driver,season, sport, league, team):
 
 def get_matches(season, sport, league, team):
     def get_local_matches():
-        counter = (len(league_info.teams) -1) * 2
         sleep(5)
         end_date = datetime.strptime(league_info.end_date,DATE_FORMAT_STR)
-        while counter:
+        start_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
+        while True:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
             if match_dict and match_dict["date"] > end_date:
                 continue
+            if match_dict and match_dict["date"] < start_date:
+                break
             if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
-                debug_info("counter",counter)
-                counter -= 1
+
                 yield match_dict
             # sleep(0.1)#FIXME :: add load
 
