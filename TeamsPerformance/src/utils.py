@@ -38,7 +38,6 @@ def is_local_league(web_elm,home: str , away: str) -> bool:
     return (home in league_info.teams) and (away in league_info.teams)
 
 def get_match_dict(web_elm):
-    date_fixer = DateFixer()
     debug_info("get_match", "called")
     #check if this is an empty widget or the widget is a video
     if len(web_elm.find_elements(By.CLASS_NAME, WIDGET_CLASS_NAME)) == 0:
@@ -81,10 +80,8 @@ def get_match_dict(web_elm):
                 date = datetime.now().strftime(DATE_FORMAT_STR)
         date = date.split(", ")[-1] # some date have day also (e.g. wed, <date>)
         date = date.replace("Sept","Sep")
-        date_obj = date_fixer.fix_Date(date)
         debug_info("date",date)
-        debug_info("date_obj",date_obj)
-        return date_obj
+        return date
 
     match_dict = {}
 
@@ -131,17 +128,21 @@ def start_session(driver,season, sport, league, team):
 def get_matches(season, sport, league, team):
     def get_local_matches():
         sleep(5)
+        date_fixer = DateFixer()
         end_date = datetime.strptime(league_info.end_date,DATE_FORMAT_STR)
         start_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
         while True:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
-            if match_dict and match_dict["date"] > end_date:
+            if match_dict is None:
                 continue
-            if match_dict and match_dict["date"] < start_date:
+            match_dict["date"] = date_fixer.fix_Date(match_dict["date"])
+            if match_dict["date"] > end_date:
+                continue
+            if match_dict["date"] < start_date:
                 break
-            if match_dict and is_local_league(web_elem,match_dict["home"],match_dict["away"]):
+            if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
 
                 yield match_dict
             # sleep(0.1)#FIXME :: add load
