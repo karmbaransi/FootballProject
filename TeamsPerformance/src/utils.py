@@ -106,14 +106,6 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
 
 
 def start_session(driver,season, sport, league, team):
-    global league_info
-    with open(LEAGUE_DATA_JSON_PATH, 'r') as f:
-        json_sports_info = json.load(f)
-        json_leagues_info = json_sports_info["sports"][sport][season]["leagues"]
-        league_info = League(teams=json_leagues_info[league]["teams"],
-                             start_date=json_leagues_info[league]["start_date"],
-                             end_date=json_leagues_info[league]["end_date"],
-                             name=league, point_rules= json_sports_info["points"][sport])
 
     driver.get(URL)
     driver.maximize_window()
@@ -125,31 +117,44 @@ def start_session(driver,season, sport, league, team):
 
     #login()
 
-def get_matches(season, sport, league, team):
+def get_matches(season, sport, league, team,upcoming_date=None):
     def get_local_matches():
         sleep(5)
         date_fixer = DateFixer()
         end_date = datetime.strptime(league_info.end_date,DATE_FORMAT_STR)
-        start_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
+        stop_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
+        if upcoming_date:
+            stop_date = upcoming_date
+        to_ret = []
         while True:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
+            debug_info("get_local_matches , match",match_dict)
             if match_dict is None:
                 continue
             match_dict["date"] = date_fixer.fix_Date(match_dict["date"])
             if match_dict["date"] > end_date:
                 continue
-            if match_dict["date"] < start_date:
+            if match_dict["date"].date() < stop_date.date():
                 break
             if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
+                to_ret.append(match_dict)
+        return to_ret
 
-                yield match_dict
-            # sleep(0.1)#FIXME :: add load
-
-
-
-
+    global league_info
+    with open(LEAGUE_DATA_JSON_PATH, 'r') as f:
+        json_sports_info = json.load(f)
+        json_leagues_info = json_sports_info["sports"][sport][season]["leagues"]
+        league_info = League(teams=json_leagues_info[league]["teams"],
+                             start_date=json_leagues_info[league]["start_date"],
+                             end_date=json_leagues_info[league]["end_date"],
+                             name=league, point_rules=json_sports_info["points"][sport])
+        
+    if upcoming_date is not None:
+        debug_info("upcoming_date.date(),datetime.now().date()",(upcoming_date.date(),datetime.now().date()))
+        if upcoming_date.date() > datetime.now().date():
+            return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
     driver = webdriver.Chrome(options=options)

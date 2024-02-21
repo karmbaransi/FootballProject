@@ -2,12 +2,29 @@ from TeamsPerformance.src.utils import get_matches, get_league_info
 from TeamsPerformance.src.utils import debug_info
 from TeamsPerformance.src.match import Match
 from TeamsPerformance.src.consts import *
+from TeamsPerformance.datebase.database import *
 
 def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
-    return get_matches(season,sport,league, team)
+    team_info = db_get_team_info(sport=sport, season=season, team=team)
+    if team_info is None:
+        matches = get_matches(season, sport, league, team)
+    else:
+        matches = get_matches(season, sport, league, team,upcoming_date=team_info.upcoming_match)
+    db_add_matches(sport=sport,season=season,league=league,matches=matches)
+    matches = db_get_matches(sport=sport,season=season,league=league,team=team)
+    up_coming = matches[-1].date
+    for match in matches:
+        if match.result is None:
+            up_coming = match.date
+            break
+
+    db_update_team_info(sport=sport,season=season,team=team,upcoming_match=up_coming)
+    return  matches
 def api_get_local_league_stats(season,sport,league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
         league_info = get_league_info()
+        if match_info.result[0] is None:
+            return 0
         if int(match_info.result[0]) >  int(match_info.result[1]):
             return league_info.point_rules["win"] if match_info.home == team else league_info.point_rules["lose"]
         elif int(match_info.result[0]) <  int(match_info.result[1]):

@@ -4,7 +4,14 @@ from django.db import models
 class Match(models.Model):
     home = models.CharField(max_length=20)
     away = models.CharField(max_length=20)
-    date = models.DateField(null=True, blank=True)
+    date = models.DateTimeField(null=True, blank=True)
     result = models.CharField(max_length=20)
     league_name = models.CharField(max_length=20)
     season = models.CharField(max_length=20)
+    sport = models.CharField(max_length=20)
+
+class Team(models.Model):
+    name = models.CharField(max_length=20)
+    upcoming_match = models.DateTimeField(null=True, blank=True)
+    season = models.CharField(max_length=20)
+    sport = models.CharField(max_length=20)
