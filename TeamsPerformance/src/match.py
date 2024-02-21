@@ -8,5 +8,5 @@ class Match:
         self.result = info["result"]
 
     def __str__(self):
-        result = "TBD" if self.result is None else self.result
-        return f"{self.home} VS. {self.away} - {result} : {self.date.strftime(DATE_FORMAT_STR)}"
+        result = ",TBD," if self.result is None else f"{self.result[0]},-,{self.result[1]}"
+        return f"{self.home},{self.away},{result},{self.date.strftime(DATE_FORMAT_STR)}"

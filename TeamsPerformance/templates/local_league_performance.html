@@ -7,6 +7,120 @@
 <!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      gap: 0px 0px;
+      grid-auto-flow: row;
+      grid-template-areas:
+        "match-tile";
+        height: 100%;
+    }
+
+    .match-tile {
+      display: grid;
+      grid-template-columns: 1.4fr 0.2fr 1.4fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 0px 0px;
+      grid-auto-flow: row;
+      grid-template-areas:
+        "date . ."
+        "home dash away"
+        "home-result dash-result away-result";
+      grid-area: match-tile;
+    }
+
+    .home-result {
+      grid-area: home-result;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
+    .away-result {
+      grid-area: away-result;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+    }
+
+
+    .dash {
+      grid-area: dash;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .dash-result {
+      grid-area: dash-result;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .date {
+      grid-area: date;
+      color: #5c5c5c;
+      padding: 8px;
+        display: flex;
+    }
+
+    .home {
+      grid-area: home;
+      display: flex;
+      justify-content: right;
+      align-items: center;}
+
+    .away {
+      grid-area: away;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+    }
+
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .container {
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .container:hover {
+      border-radius: 8px;
+      background-color: #e0e0e0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+      transition: box-shadow 0.3 ease;
+    }
+
+    .container *:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    /* Change the font for a specific element */
+    .container {
+      font-family: "Times New Roman", serif;
+    }
+
+    /* Change the font for a class of elements */
+    .date, .home, .away, .home-result, .away-result, .dash, .dash-result {
+      font-family: "Trebuchet MS", monospace;
+    }
     .back-tab {
         position: absolute;
         top: 20px;
@@ -66,11 +180,11 @@
 
     #matchesList li {
         margin-bottom: 20px;
-        padding: 15px;
         background-color: #f0f0f0;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        width: 30%;
+        width: 18%;
+        height: 100px;
         display: inline-block;
         margin-right: 10px;
     }
@@ -172,8 +286,19 @@
         matchesList.innerHTML = '';
         // Add matches to the list
         matches.forEach(match => {
+            let info = match.split(",")
             const matchItem = document.createElement('li');
-            matchItem.textContent = match;
+            matchItem.innerHTML = '<div class="container"> \
+                                      <div class="match-tile">\
+                                        <div class="date">'+ info[5] +'</div>\
+                                        <div class="dash">-</div>\
+                                        <div class="home"><b>'+ info[0] +'</b></div>\
+                                        <div class="away"><b>'+ info[1] +'</b></div>\
+                                        <div class="home-result"><b>'+ info[2] +'</b></div>\
+                                        <div class="dash-result">'+ info[3] +'</div>\
+                                        <div class="away-result"><b>'+ info[4] +'</b></div>\
+                                      </div>\
+                                    </div>'
             matchesList.appendChild(matchItem);
         });
     }
