@@ -150,7 +150,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
                              start_date=json_leagues_info[league]["start_date"],
                              end_date=json_leagues_info[league]["end_date"],
                              name=league, point_rules=json_sports_info["points"][sport])
-        
+
     if upcoming_date is not None:
         debug_info("upcoming_date.date(),datetime.now().date()",(upcoming_date.date(),datetime.now().date()))
         if upcoming_date.date() > datetime.now().date():

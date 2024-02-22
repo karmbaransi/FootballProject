@@ -27,27 +27,25 @@ def db_add_matches(sport, season, league,matches):
     for match in matches:
         print(f"adding match: {match} to DB, res {match.result}")
         result = "None" if  match.result is None else match.result
-        old_match = MatchDB.objects.filter(
+        exists = MatchDB.objects.filter(
             home=match.home,
             away=match.away,
             date=match.date,
-            result=result,
             league_name=league,
             season=season,
             sport=sport
-        )
-        if old_match.exists():
-            old_match.delete()
-
-        new_match = MatchDB(
-                                        home=match.home,
-                                        away=match.away,
-                                        date=match.date,
-                                        result=result,
-                                        league_name=league,
-                                        season=season,
-                                        sport=sport)
-        new_match.save()
+        ).update(result=result)
+        print(f"new change {exists}")
+        if exists == 0: #match does not exist in the database
+            new_match = MatchDB(
+                                home=match.home,
+                                away=match.away,
+                                date=match.date,
+                                result=result,
+                                league_name=league,
+                                season=season,
+                                sport=sport)
+            new_match.save()
 
 def db_get_matches(sport, season, league,team):
     matches = MatchDB.objects.filter((Q(home=team) | Q(away=team)) & Q(season=season)
