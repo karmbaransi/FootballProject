@@ -16,6 +16,7 @@ import json
 from TeamsPerformance.src.consts import *
 from TeamsPerformance.src.league import League
 from TeamsPerformance.src.datefixer import DateFixer
+from TeamsPerformance.src.custom_exception import LoggableException
 import pdb
 DEBUG_MODE = True
 
@@ -105,7 +106,7 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
             return WebDriverWait(driver, MAX_WAIT_TIME).until(
             EC.presence_of_element_located((by_elm, elm)))
     except Exception as e:
-        raise Exception(f"Please check your internet connection and the json syntax")
+        raise LoggableException(f"Please check your internet connection and the json syntax")
 
 def start_session(driver,season, sport, league, team):
 
