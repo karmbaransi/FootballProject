@@ -97,13 +97,15 @@ def get_match_dict(web_elm):
     return match_dict
 
 def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
-    if multiple:
-        return WebDriverWait(driver, MAX_WAIT_TIME).until(
-        EC.presence_of_all_elements_located((by_elm, elm)))
-    else:
-        return WebDriverWait(driver, MAX_WAIT_TIME).until(
-        EC.presence_of_element_located((by_elm, elm)))
-
+    try:
+        if multiple:
+            return WebDriverWait(driver, MAX_WAIT_TIME).until(
+            EC.presence_of_all_elements_located((by_elm, elm)))
+        else:
+            return WebDriverWait(driver, MAX_WAIT_TIME).until(
+            EC.presence_of_element_located((by_elm, elm)))
+    except Exception as e:
+        raise Exception(f"Please check your internet connection and the json syntax")
 
 def start_session(driver,season, sport, league, team):
 
@@ -130,10 +132,10 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
-            debug_info("get_local_matches , match",match_dict)
             if match_dict is None:
                 continue
             match_dict["date"] = date_fixer.fix_Date(match_dict["date"])
+            debug_info("get_local_matches , match",match_dict)
             if match_dict["date"] > end_date:
                 continue
             if match_dict["date"].date() < stop_date.date():

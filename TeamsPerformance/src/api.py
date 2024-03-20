@@ -2,6 +2,7 @@ from TeamsPerformance.src.utils import get_matches, get_league_info
 from TeamsPerformance.src.utils import debug_info
 from TeamsPerformance.src.match import Match
 from TeamsPerformance.src.consts import *
+from datetime import datetime
 from TeamsPerformance.datebase.database import *
 
 def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
@@ -12,7 +13,7 @@ def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the 
         matches = get_matches(season, sport, league, team,upcoming_date=team_info.upcoming_match)
     db_add_matches(sport=sport,season=season,league=league,matches=matches)
     matches = db_get_matches(sport=sport,season=season,league=league,team=team)
-    up_coming = matches[-1].date
+    up_coming = datetime.max
     for match in matches:
         if match.result is None:
             up_coming = match.date

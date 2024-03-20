@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .error-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .error-message {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-tab {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 9999; /* Ensure it's above other elements */
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        }
+
+    .back-tab:hover {
+        background-color: #45a049;
+    }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h2>Error Page</h2>
+        <p class="error-message">An error occurred while processing your request.</p>
+        <p>{{ err_msg }}.</p>
+        <!-- Back tab -->
+        <a href="{%url 'home'%}" class="back-tab">Back</a>
+    </div>
+
+</body>
+</html>
