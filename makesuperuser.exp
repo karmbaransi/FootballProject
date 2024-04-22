@@ -1,0 +1,9 @@
+spawn python manage.py createsuperuser
+expect "Username:*"
+send "superuser\r"
+expect "Email:*"
+send "\r"
+expect "Password:*"
+send "12\r"
+expect "Password (again):*"
+send "12\r"

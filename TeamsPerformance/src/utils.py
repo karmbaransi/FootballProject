@@ -160,7 +160,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome("/usr/local/bin/chromedriver-linux64.exe",options=options)
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
