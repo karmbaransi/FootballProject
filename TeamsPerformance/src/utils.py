@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
 from datetime import datetime
 from datetime import timedelta
 from TeamsPerformance.src.match import Match
@@ -160,7 +162,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
-    driver = webdriver.Chrome("/usr/local/bin/chromedriver-linux64.exe",options=options)
+    driver = webdriver.Chrome(ChromeDriverManager(version="87.0.4280.88",chrome_type=ChromeType.CHROMIUM).install(),options=options)
+    driver.get("https://www.google.com")
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
