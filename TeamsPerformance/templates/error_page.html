@@ -53,7 +53,8 @@
     <div class="error-container">
         <h2>Error Page</h2>
         <p class="error-message">An error occurred while processing your request.</p>
-        <p>{{ err_msg }}.</p>
+        <p>While searching for: {{ team }} in {{ league }} {{ season }} ({{ sport }}).</p>
+        <p>{{ err_msg }}</p>
         <!-- Back tab -->
         <a href="{%url 'home'%}" class="back-tab">Back</a>
     </div>

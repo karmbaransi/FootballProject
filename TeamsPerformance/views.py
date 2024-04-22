@@ -27,10 +27,10 @@ def performance(request, selected_season, selected_sport, selected_league, selec
             stats = api_get_stats(season=selected_season, sport=selected_sport ,league=selected_league, team=selected_team)
             return render(request, 'local_league_performance.html', {'season': selected_season,'sport' : selected_sport,'team': selected_team, 'league': selected_league,'stats': stats})
     except LoggableException as e:
-        err_msg =  f"{e}"
-        return render(request,'error_page.html', {'err_msg': err_msg})
+        err_msg = f"{e}."
+        return render(request,'error_page.html', {'err_msg': err_msg, 'season': selected_season,'sport' : selected_sport,'team': selected_team, 'league': selected_league})
     except Exception as e:
         print(colored(f"ERROR: {e}","red"))
         err_msg = ""
-        return render(request, 'error_page.html', {'err_msg': err_msg})
+        return render(request, 'error_page.html', {'err_msg': err_msg, 'season': selected_season,'sport' : selected_sport,'team': selected_team, 'league': selected_league})
 
