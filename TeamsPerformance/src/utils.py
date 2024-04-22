@@ -165,8 +165,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     print("stammmmmmmmmmmmm111111")
     caps = DesiredCapabilities.CHROME
     caps['loggingPrefs'] = {'browser': 'ALL'}
-    driver = webdriver.Chrome(ChromeDriverManager().install(), desired_capabilities=caps)
-    # driver = webdriver.Chrome()
+    # driver = webdriver.Chrome(ChromeDriverManager().install(), desired_capabilities=caps)
+    driver = webdriver.Chrome()
     driver.get("https://www.google.com")
     print("stammmmmmmmmmmmm222")
     start_session(driver,season=season, sport=sport, league=league, team=team)
