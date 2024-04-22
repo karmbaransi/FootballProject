@@ -1,0 +1,9 @@
+django
+django-crispy-forms
+whitenoise
+sendgrid
+datetime
+django-cors-headers
+django-crispy-forms
+django-bootstrap4
+psycopg2-binary
