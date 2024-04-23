@@ -1,195 +1,366 @@
-<!-- chart_template.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sport Selector</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    color: #fff; /* White text */
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    <title>Chart Example</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Form</title>
-    <style>
-        body {
-            background-image: url('{{ STATIC_URL }}/homebackground.jpg');
-            background-size: cover; /* Adjust the background size as needed */
-            background-repeat: no-repeat;
-            background-attachment: fixed; /* Keeps the background fixed while scrolling */
-            /* You can also set other background properties such as position, color, etc. */
-            /* background-position: center center; */
-            /* background-color: #f0f0f0; */
 
-            font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+  .container {
+    display: flex;
+    justify-content: space-between; /* Space items evenly */
+    align-items: flex-start; /* Align items to the top */
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+    width: 90%; /* Set the width of the container */
+    max-width: 1200px; /* Maximum width of the container */
+    margin: 0 auto; /* Center the container horizontally */
+  }
 
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+  .card {
+    flex: 1; /* Take up equal space */
+    padding: 20px;
+    margin: 10px;
+    background-color: rgba(255, 255, 255, 0.2); /* Lighter semi-transparent white */
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow */
+    width: 30%; /* Set the width of each card */
+  }
 
-        h1 {
-            color: #333;
-        }
+  .inner-card {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1); /* Lighter semi-transparent white */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow */
+    transition: transform 0.3s ease;
+      text-align: center;
+      min-height: 100px;
+  }
 
-        select {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #4caf50;
-            background-color: #c2f0c5;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+  .inner-card:hover {
+    transform: scale(1.05); /* Scale up on hover */
+  }
 
-        button {
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+  .dropdown-wrapper,
+  .select-wrapper {
+    margin-bottom: 20px;
+  }
 
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .myForm {
+      min-width: 80%;
+  }
+
+  .option {
+    padding: 15px 25px; /* Increased padding for longer content */
+    margin: 5px;
+    border-radius: 20px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border 0.3s ease; /* Added border transition */
+    background-color: rgba(255, 255, 0, 0.7); /* Lighter yellow background */
+    color: #000; /* Black text */
+  }
+
+  .option.selected {
+    background-color: rgba(255, 255, 0, 0.7); /* Lighter yellow background when selected */
+    border: 2px solid #fff; /* White border when selected */
+    color: #000; /* Black text when selected */
+  }
+
+  .option:hover {
+    opacity: 0.7;
+  }
+
+  select {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    width: 100%; /* Make the select element full width */
+  }
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+</style>
 </head>
 <body>
+<form method="POST" id="myForm" class="myForm">
+    {% csrf_token %}
+    <div class="container">
+  <div class="card" id="recently_called">
+    <div class="title">Most Recent</div>
 
-    <form method="POST">
-        <h1>Football League Selector</h1>
-        {% csrf_token %}
-
-        <select name="sports" id="sports">
-            <option value="none">Choose Sport</option>
-        </select>
-
-        <br><br>
-
-        <select name="season" id="season" style="display: none;">
-            <option value="none">Choose Season</option>
-        </select>
-
-        <br><br>
-
-        <select name="leagues" id="leagues" style="display: none;">
-            <option value="none">Choose League</option>
-        </select>
-
-        <br><br>
-
-        <select name="team_name" id="team_name" style="display: none;"></select>
-
-        <br><br>
-
-        <button id="calculate_button" type="submit" style="display: none;">CALCULATE</button>
-    </form>
+    </div>
 
 
-    <script>
-        let leagues_info = {{ leagues_info|safe }};
-        let sports = leagues_info["sports"];
-        let sportsDropdown = document.getElementById("sports");
-        for (const sport in sports) {
-            console.log("ssss");
+  <div class="card">
+    <div class="title">Search Box</div>
+
+    <div class="select-wrapper">
+     <input type="hidden" name="sports" id="pass_sports">
+      <div id="sports" class="options">
+{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
+{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
+{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
+        <!-- Add more sport options as needed -->
+      </div>
+    </div>
+
+
+    <div class="dropdown-wrapper">
+      <select id="season" name="season">
+      </select>
+    </div>
+
+    <div class="select-wrapper">
+      <select name="leagues" id="leagues">
+        <option value="none">Choose League</option>
+      </select>
+    </div>
+
+    <div class="select-wrapper">
+      <select name="team_name" id="team_name" style="pointer-events: none; opacity: 0.5">
+      </select>
+    </div>
+
+    <div class="select-wrapper">
+        <div class="options">
+          <button id="calculate_button" class="option" type="submit" onclick="set_sport_on_click()" style="pointer-events: none; opacity: 0.5" >Search</button>
+        </div>
+    </div>
+
+</div>
+
+  <div class="card" id="most_popular">
+    <div class="title">Most Popular</div>
+    </div>
+  </div>
+</div>
+</form>
+<script>
+
+
+    const DEFAULT_SEASON = "23-24"
+    const DEFAULT_SPORT = "Football"
+    let leagues_info = {{ leagues_info|safe }};
+    let most_popular = leagues_info["MostPopular"]
+    let sports = leagues_info["sports"];
+    let sportsOptions = document.getElementById("sports");
+    let G_sport = DEFAULT_SPORT
+    let recently_called = {{ recently_called|safe }};
+    console.log("ajfieof",recently_called[0][0])
+
+    let most_popular_card = document.getElementById("most_popular");
+    for (let i=0 ; i < most_popular.length; i++) {
+        let inner_card = document.createElement('div');
+        const header = document.createElement('h3');
+        header.innerHTML = most_popular[i][3];
+        const info = document.createElement('p');
+        info.innerHTML = most_popular[i][2] + " • " + most_popular[i][1];
+        inner_card.appendChild(header);
+        inner_card.appendChild(info);
+        inner_card.classList.add("inner-card");
+        inner_card.addEventListener('click', () => {
+            inner_cards_on_click(most_popular[i])
+        });
+        most_popular_card.appendChild(inner_card);
+
+    }
+
+    let recently_called_card = document.getElementById("recently_called");
+    for (let i=0 ; i < recently_called.length; i++) {
+        let inner_card = document.createElement('div');
+        const header = document.createElement('h3');
+            header.innerHTML = recently_called[i][3];
+            const info = document.createElement('p');
+            info.innerHTML = recently_called[i][2] + " • " + recently_called[i][1];
+        if(recently_called[i][3] === "None"){
+            header.innerHTML = " ";
+            {#const info = document.createElement('p');#}
+            info.innerHTML = " ";
+            inner_card.style = "pointer-events: none; opacity: 0.5";
+        }
+        inner_card.appendChild(header);
+        inner_card.appendChild(info);
+        inner_card.classList.add("inner-card");
+        inner_card.addEventListener('click', () => {
+            inner_cards_on_click(recently_called[i])
+        });
+        recently_called_card.appendChild(inner_card);
+
+    }
+
+    for (const sport in sports) {
+        const newItem = document.createElement('div');
+        newItem.classList.add('option');
+        newItem.textContent = sport;
+        newItem.id = sport;
+        sportsOptions.appendChild(newItem);
+        if(sport === DEFAULT_SPORT)
+            newItem.classList.add('selected');
+
+        newItem.addEventListener('click', () => {
+        {#alert(`You clicked: ${sport}`);#}
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(opt => opt.classList.remove('selected'));
+        newItem.classList.add('selected');
+        sport_listener(sport);
+        // You can do further processing here, such as updating another div with the selected value
+        });
+    }
+
+     function sport_listener(sport){
+        G_sport = sport;
+
+        console.log("passs sport ",pass_sports.value, "-",sport);
+        let seasonsDropdown = document.getElementById('season')
+        let leaguesDropdown = document.getElementById('leagues');
+        let teamNameDropdown = document.getElementById('team_name');
+        let calculateButton = document.getElementById('calculate_button');
+
+        teamNameDropdown.innerHTML = "";
+        leaguesDropdown.innerHTML = '<option value="none">Choose League</option>';
+        seasonsDropdown.innerHTML = "";
+        seasonsDropdown.value = DEFAULT_SEASON;
+        seasonsDropdown.text = DEFAULT_SEASON;
+
+        for (const season in sports[sport]) {
+            console.log(season);
             var option = document.createElement('option');
-            option.value = sport;
-            option.text = sport.charAt(0).toUpperCase() + sport.slice(1); // Capitalize first letter
-            sportsDropdown.appendChild(option);
+            option.value = season;
+            option.text = season;
+            seasonsDropdown.appendChild(option);
+        }
+        for (const league in sports[sport][DEFAULT_SEASON].leagues) {
+                var option = document.createElement('option');
+                option.value = league;
+                option.text = league;
+                leaguesDropdown.appendChild(option);
+         }
+
+         teamNameDropdown.style="pointer-events: none; opacity: 0.5";
+         calculateButton.style="pointer-events: none; opacity: 0.5";
+    }
+
+
+    let seasonsDropdown = document.getElementById('season')
+    let leaguesDropdown = document.getElementById('leagues');
+    for (const season in sports[DEFAULT_SPORT]) {
+            console.log(season);
+            var option = document.createElement('option');
+            option.value = season;
+            option.text = season;
+            seasonsDropdown.appendChild(option);
+    }
+    leaguesDropdown.innerHTML = '<option value="none">Choose League</option>'
+     for (const league in sports[DEFAULT_SPORT][DEFAULT_SEASON].leagues) {
+            var option = document.createElement('option');
+            option.value = league;
+            option.text = league;
+            leaguesDropdown.appendChild(option);
         }
 
 
-        sportsDropdown.addEventListener("change", function() {
-            let sport = sportsDropdown.value;
-            let seasonsDropdown = document.getElementById('season')
-            let leaguesDropdown = document.getElementById('leagues');
-            let teamNameDropdown = document.getElementById('team_name');
-            let calculateButton = document.getElementById('calculate_button');
 
-            if (sport !== "none") {
-                seasonsDropdown.style = "";
-                seasonsDropdown.innerHTML = '<option value="none">Choose Season</option>';
-                teamNameDropdown.style = "display: none;";
-                calculateButton.style = "display: none;";
+document.getElementById("season").addEventListener("change", function () {
+    let sport = G_sport ;//sportsDropdown.value; Todo :: FIXME
+    let season = document.getElementById('season').value;
+    let leaguesDropdown = document.getElementById('leagues');
+    let teamNameDropdown = document.getElementById('team_name');
+    let calculateButton = document.getElementById('calculate_button');
 
-                for (const season in sports[sport]) {
-                    console.log(season);
-                    var option = document.createElement('option');
-                    option.value = season;
-                    option.text = season;
-                    seasonsDropdown.appendChild(option);
-                }
-            } else {
-                seasonsDropdown.style = "display: none;"
-                leaguesDropdown.style = "display: none;";
-                teamNameDropdown.style = "display: none;";
-                calculateButton.style = "display: none;";
-            }
-        });
+    if (season !== "none") {
+        leaguesDropdown.style = "";
+        leaguesDropdown.innerHTML = '<option value="none">Choose League</option>';
 
-        document.getElementById("season").addEventListener("change", function () {
-            let sport = sportsDropdown.value;
-            let season = document.getElementById('season').value;
-            let leaguesDropdown = document.getElementById('leagues');
-            let teamNameDropdown = document.getElementById('team_name');
-            let calculateButton = document.getElementById('calculate_button');
+        for (const league in sports[sport][season].leagues) {
+            var option = document.createElement('option');
+            option.value = league;
+            option.text = league;
+            leaguesDropdown.appendChild(option);
+        }
+    }
+    teamNameDropdown.style="pointer-events: none; opacity: 0.5";
+    calculateButton.style="pointer-events: none; opacity: 0.5";
+    teamNameDropdown.innerHTML = "";
 
-            if (season !== "none") {
-                leaguesDropdown.style = "";
-                leaguesDropdown.innerHTML = '<option value="none">Choose League</option>';
-                teamNameDropdown.style = "display: none;";
-                calculateButton.style = "display: none;";
+});
 
-                for (const league in sports[sport][season].leagues) {
-                    var option = document.createElement('option');
-                    option.value = league;
-                    option.text = league;
-                    leaguesDropdown.appendChild(option);
-                }
-            } else {
-                leaguesDropdown.style = "display: none;";
-                teamNameDropdown.style = "display: none;";
-                calculateButton.style = "display: none;";
-            }
+document.getElementById("leagues").addEventListener("change", function() {
+    let sport = G_sport//sportsDropdown.value; todo :: fixme
+    let season = document.getElementById('season').value;
+    let league = document.getElementById('leagues').value;
+    let teamNameDropdown = document.getElementById('team_name');
+    let calculateButton = document.getElementById('calculate_button');
+    teamNameDropdown.innerHTML = "";
 
-        });
+    if (league === "none") {
+        teamNameDropdown.style="pointer-events: none; opacity: 0.5";
+        calculateButton.style="pointer-events: none; opacity: 0.5";
+        return;
+    }
 
-        document.getElementById("leagues").addEventListener("change", function() {
-            let sport = sportsDropdown.value;
-            let season = document.getElementById('season').value;
-            let league = document.getElementById('leagues').value;
-            let teamNameDropdown = document.getElementById('team_name');
-            let calculateButton = document.getElementById('calculate_button');
-            teamNameDropdown.innerHTML = "";
+    calculateButton.style = "";
+    teamNameDropdown.style = "";
 
-            if (league === "none") {
-                teamNameDropdown.style = "display: none;";
-                calculateButton.style = "display: none;";
-                return;
-            }
+    let teamsInLeagues = sports[sport][season].leagues[league].teams;
 
-            calculateButton.style = "";
-            teamNameDropdown.style = "";
+    for (var i = 0; i < teamsInLeagues.length; i++) {
+        var option = document.createElement('option');
+        option.value = teamsInLeagues[i];
+        option.text = teamsInLeagues[i];
+        teamNameDropdown.appendChild(option);
+    }
+});
 
-            let teamsInLeagues = sports[sport][season].leagues[league].teams;
 
-            for (var i = 0; i < teamsInLeagues.length; i++) {
-                var option = document.createElement('option');
-                option.value = teamsInLeagues[i];
-                option.text = teamsInLeagues[i];
-                teamNameDropdown.appendChild(option);
-            }
-        });
+  function set_sport_on_click() {
+    document.getElementById('pass_sports').value = G_sport;
+  }
 
-    </script>
+  function inner_cards_on_click(vars){
+    const form = document.getElementById("myForm")
+      document.getElementById("pass_sports").value = vars[0];
+      sport_listener(vars[0]);
+
+
+    ids = {1: "season",2: "leagues", 3: "team_name"}
+      var option = document.createElement('option');
+      for(id in ids){
+          option.value = vars[id];
+          option.text = vars[id];
+          document.getElementById(ids[id]).appendChild(option);
+          document.getElementById(ids[id]).value = vars[id];
+      }
+    form.submit()
+  }
+</script>
+
 </body>
 </html>

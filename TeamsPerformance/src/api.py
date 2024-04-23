@@ -6,7 +6,7 @@ from datetime import datetime
 from TeamsPerformance.datebase.database import *
 
 def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
-    team_info = db_get_team_info(sport=sport, season=season, team=team)
+    team_info = db_get_team_info(sport=sport, season=season, team=team,league=league)
     if team_info is None:
         matches = get_matches(season, sport, league, team)
     else:
@@ -19,7 +19,7 @@ def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the 
             up_coming = match.date
             break
 
-    db_update_team_info(sport=sport,season=season,team=team,upcoming_match=up_coming)
+    db_update_team_info(sport=sport,season=season,team=team,upcoming_match=up_coming,league=league)
     return  matches
 def api_get_local_league_stats(season,sport,league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
