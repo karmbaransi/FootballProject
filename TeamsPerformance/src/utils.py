@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from datetime import datetime
 from datetime import timedelta
 from TeamsPerformance.src.match import Match
@@ -17,7 +19,6 @@ from TeamsPerformance.src.consts import *
 from TeamsPerformance.src.league import League
 from TeamsPerformance.src.datefixer import DateFixer
 from TeamsPerformance.src.custom_exception import LoggableException
-
 import pdb
 DEBUG_MODE = True
 
@@ -161,7 +162,13 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
-    driver = webdriver.Chrome(options=options)
+    print("stammmmmmmmmmmmm111111")
+    # caps = DesiredCapabilities.CHROME
+    # caps['loggingPrefs'] = {'browser': 'ALL'}
+    # driver = webdriver.Chrome(ChromeDriverManager().install(), desired_capabilities=caps)
+    driver = webdriver.Chrome()
+    driver.get("https://www.google.com")
+    print("stammmmmmmmmmmmm222")
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
