@@ -68,7 +68,7 @@ def db_get_matches(sport, season, league,team):
 
 def get_recently_called_matches():
 
-    teams = TeamDB.objects.all().order_by('-last_called')[:3]
+    teams = TeamDB.objects.all().order_by('-last_called')[:4]
     to_ret = []
     for team in teams:
         to_ret.append([team.sport,team.season,team.league_name, team.name])
