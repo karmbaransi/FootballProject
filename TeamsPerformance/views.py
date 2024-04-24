@@ -3,15 +3,19 @@ from TeamsPerformance.src.api import *
 from TeamsPerformance.src.custom_exception import LoggableException
 import json
 from termcolor import colored
+from TeamsPerformance.datebase.database import get_recently_called_matches
 
 from .models import Match
 
 # Create your views here.
 def home(request):
+
+    recently_called = get_recently_called_matches()
+
     with open("TeamsPerformance/static/league_data.json", 'r') as f:
         leagues_info = json.load(f)
     if request.method == 'GET':
-        return render(request, 'home.html', {'leagues_info':leagues_info})
+        return render(request, 'home.html', {'leagues_info':leagues_info, 'recently_called': recently_called})
     else:#calculate
         selected_season = request.POST["season"]
         selected_sport = request.POST["sports"]
