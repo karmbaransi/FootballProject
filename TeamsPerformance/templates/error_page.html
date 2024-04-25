@@ -7,8 +7,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
+            color: #fff; /* White text */
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .error-container {
             background-color: #fff;
@@ -18,6 +24,8 @@
             max-width: 400px;
             margin: 0 auto;
             text-align: center;
+            min-height: 15%;
+            min-width: 30%;
         }
         .error-message {
             color: #ff0000;
@@ -32,28 +40,33 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        .message{
+            color: black;
+            font-weight: bold;
+        }
         .back-tab {
         position: absolute;
         top: 20px;
         left: 20px;
         z-index: 9999; /* Ensure it's above other elements */
-        background-color: #4CAF50;
-        color: white;
+        background-color: rgba(255, 255, 0, 0.7);
+        color: black;
         padding: 10px 20px;
         border-radius: 5px;
         text-decoration: none;
         }
 
     .back-tab:hover {
-        background-color: #45a049;
+        background-color: rgb(255, 255, 0);
     }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <h2>Error Page</h2>
+        <h2 class="message">Error Page</h2>
         <p class="error-message">An error occurred while processing your request.</p>
-        <p>{{ err_msg }}.</p>
+        <p class="message">Request: {{ sport }} • {{ season }} • {{ league }} • {{ team }}</p>
+        <p class="message">{{ err_msg }}</p>
         <!-- Back tab -->
         <a href="{%url 'home'%}" class="back-tab">Back</a>
     </div>
