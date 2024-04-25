@@ -180,7 +180,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     options.add_argument('--allow-insecure-localhost')
     # options.add_argument('--remote-debugging-pipe')
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver.exe",options=options)
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
