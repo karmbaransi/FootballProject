@@ -17,6 +17,7 @@ from TeamsPerformance.src.consts import *
 from TeamsPerformance.src.league import League
 from TeamsPerformance.src.datefixer import DateFixer
 from TeamsPerformance.src.custom_exception import LoggableException
+from selenium.webdriver.chrome.service import Service
 
 import pdb
 DEBUG_MODE = True
@@ -179,8 +180,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     options.add_argument('--no-sandbox')
     options.add_argument('--allow-insecure-localhost')
     # options.add_argument('--remote-debugging-pipe')
-
-    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver.exe",options=options)
+    service = Service(executable_path="/usr/bin/chromedriver.exe")
+    driver = webdriver.Chrome(service=service,options=options)
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
