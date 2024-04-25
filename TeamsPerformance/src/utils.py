@@ -161,6 +161,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     driver = webdriver.Chrome(options=options)
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
