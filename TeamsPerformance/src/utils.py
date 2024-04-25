@@ -177,6 +177,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--no-sandbox')
+    options.add_argument('allow-insecure-localhost')
     options.add_argument('--remote-debugging-pipe')
 
     driver = webdriver.Chrome(options=options)
