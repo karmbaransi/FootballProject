@@ -17,6 +17,7 @@ from TeamsPerformance.src.consts import *
 from TeamsPerformance.src.league import League
 from TeamsPerformance.src.datefixer import DateFixer
 from TeamsPerformance.src.custom_exception import LoggableException
+from webdriver_manager.chrome import ChromeDriverManager
 
 import pdb
 DEBUG_MODE = True
@@ -167,7 +168,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=ChromeDriverManager(), options=options)
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
