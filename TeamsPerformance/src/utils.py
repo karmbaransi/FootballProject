@@ -113,7 +113,7 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
 def start_session(driver,season, sport, league, team):
 
     driver.get(URL)
-    driver.maximize_window()
+    # driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
     search_query = f"{team} {sport} matches in {league}"
     search_box.send_keys(search_query)
@@ -165,23 +165,28 @@ def get_matches(season, sport, league, team,upcoming_date=None):
 
     # user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
-    options = webdriver.ChromeOptions()
-    options.headless = True
+    # options = webdriver.ChromeOptions()
+    # options.headless = True
     # options.add_argument(f'user-agent={user_agent}')
     # options.add_argument("--window-size=1920,1080")
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--allow-running-insecure-content')
-    # options.add_argument("--disable-extensions")
-    options.add_argument("--proxy-server='direct://'")
-    options.add_argument("--proxy-bypass-list=*")
-    # options.add_argument("--start-maximized")
-    options.add_argument('--disable-gpu')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--allow-insecure-localhost')
-    # options.add_argument('--remote-debugging-pipe')
-    service = Service(executable_path="/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service,options=options)
+    # options.add_argument('--ignore-certificate-errors')
+    # options.add_argument('--allow-running-insecure-content')
+    # # options.add_argument("--disable-extensions")
+    # options.add_argument('--headless')
+    # options.add_argument("--proxy-server='direct://'")
+    # options.add_argument("--proxy-bypass-list=*")
+    # options.add_argument("--start-minimized")
+    # options.add_argument('--disable-gpu')
+    # options.add_argument('--lang=ar')
+    # options.add_argument('--lang=en_UK')
+    # options.add_argument('--disable-dev-shm-usage')
+    # options.add_argument('--no-sandbox')
+    # options.add_argument('--allow-insecure-localhost')
+    # # options.add_argument('--remote-debugging-pipe')
+    # service = Service(executable_path="/usr/bin/chromedriver")
+    # driver = webdriver.Chrome(service=service,options=options)
+    driver = webdriver.Chrome(options=options)
+    driver.minimize_window()
     start_session(driver,season=season, sport=sport, league=league, team=team)
 
 
