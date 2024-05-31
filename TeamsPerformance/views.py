@@ -8,19 +8,23 @@ from TeamsPerformance.datebase.database import get_recently_called_matches
 from .models import Match
 
 # Create your views here.
+is_dark = None
 def home(request):
 
     recently_called = get_recently_called_matches()
-
+    global is_dark
+    if is_dark is None:
+        is_dark = 1
     with open("TeamsPerformance/static/league_data.json", 'r') as f:
         leagues_info = json.load(f)
     if request.method == 'GET':
-        return render(request, 'home.html', {'leagues_info':leagues_info, 'recently_called': recently_called})
+        return render(request, 'home.html', {'leagues_info':leagues_info, 'recently_called': recently_called,'is_dark': is_dark})
     else:#calculate
         selected_season = request.POST["season"]
         selected_sport = request.POST["sports"]
         selected_team = request.POST["team_name"]
         selected_league = request.POST["leagues"]
+        is_dark = request.POST["is_dark"]
         return redirect('performance', selected_season, selected_sport, selected_league, selected_team)
 
 

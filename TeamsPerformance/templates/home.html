@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sport Selector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -16,9 +17,14 @@ body {
     justify-content: center;
     align-items: center;
   }
-
-
-  .container {
+.body_light {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e1e1e1 50%,#f5f5f5 100%);
+    color: #000;
+}
+.body_dark {
+    background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
+}
+.container {
     display: flex;
     justify-content: space-between; /* Space items evenly */
     align-items: flex-start; /* Align items to the top */
@@ -107,9 +113,55 @@ body {
     text-align: center;
   }
 
+  .toggle-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        .toggle-button .card2 {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .toggle-button.dark .card2 {
+            transform: rotateY(180deg);
+        }
+        .toggle-button .card2 .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            font-size: 24px;
+        }
+        .toggle-button .card2 .sun-icon {
+            background-color: transparent;
+            color: black;
+        }
+        .toggle-button .card2 .moon-icon {
+            background-color: transparent;
+            color: white;
+            transform: rotateY(180deg);
+        }
 </style>
 </head>
 <body>
+    <button class="toggle-button" id="toggleButton">
+        <div class="card2">
+            <div class="icon moon-icon"><i class="fas fa-moon"></i></div>
+            <div class="icon sun-icon"><i class="fas fa-sun"></i></div>
+        </div>
+    </button>
 <form method="POST" id="myForm" class="myForm">
     {% csrf_token %}
     <div class="container">
@@ -132,6 +184,15 @@ body {
       </div>
     </div>
 
+  <div class="select-wrapper">
+     <input type="hidden" name="is_dark" id="is_dark">
+      <div id="is_dark" class="options">
+{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
+{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
+{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
+        <!-- Add more sport options as needed -->
+      </div>
+    </div>
 
     <div class="dropdown-wrapper">
       <select id="season" name="season">
@@ -151,7 +212,7 @@ body {
 
     <div class="select-wrapper">
         <div class="options">
-          <button id="calculate_button" class="option" type="submit" onclick="set_sport_on_click()" style="pointer-events: none; opacity: 0.5" >Search</button>
+          <button id="calculate_button" class="option" type="submit" onclick="set_G_vars_on_click()" style="pointer-events: none; opacity: 0.5" >Search</button>
         </div>
     </div>
 
@@ -165,16 +226,34 @@ body {
 </form>
 <script>
 
-
+    const body = document.body;
     const DEFAULT_SEASON = "23-24"
     const DEFAULT_SPORT = "Football"
     let leagues_info = {{ leagues_info|safe }};
     let most_popular = leagues_info["MostPopular"]
     let sports = leagues_info["sports"];
     let sportsOptions = document.getElementById("sports");
-    let G_sport = DEFAULT_SPORT
+    let G_sport = DEFAULT_SPORT;
+    let G_is_dark = {{ is_dark |safe }};
     let recently_called = {{ recently_called|safe }};
-    console.log("ajfieof",recently_called[0][0])
+
+    //const body = document.body;
+
+    const toggleButton = document.getElementById('toggleButton');
+    if(G_is_dark){
+        toggleButton.classList.toggle('dark');
+    }else {
+        body.classList.toggle("body_light");
+    }
+
+    toggleButton.addEventListener('click', function() {
+            G_is_dark = 1- G_is_dark;
+            //body.classList.toggle("body_dark");
+            body.classList.toggle("body_light")
+            //body.classList.remove("body_light")
+            toggleButton.classList.toggle('dark');
+        {#toggleButton.classList.toggle('light');#}
+    });
 
     let most_popular_card = document.getElementById("most_popular");
     for (let i=0 ; i < most_popular.length; i++) {
@@ -313,6 +392,7 @@ document.getElementById("season").addEventListener("change", function () {
 });
 
 document.getElementById("leagues").addEventListener("change", function() {
+
     let sport = G_sport//sportsDropdown.value; todo :: fixme
     let season = document.getElementById('season').value;
     let league = document.getElementById('leagues').value;
@@ -340,13 +420,16 @@ document.getElementById("leagues").addEventListener("change", function() {
 });
 
 
-  function set_sport_on_click() {
+  function set_G_vars_on_click() {
     document.getElementById('pass_sports').value = G_sport;
+    document.getElementById('is_dark').value = G_is_dark;
+
   }
 
   function inner_cards_on_click(vars){
     const form = document.getElementById("myForm")
       document.getElementById("pass_sports").value = vars[0];
+        document.getElementById('is_dark').value = G_is_dark;
       sport_listener(vars[0]);
 
 
