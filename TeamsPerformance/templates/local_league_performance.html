@@ -6,6 +6,7 @@
 <title>Football Project</title>
 <!-- Include Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
     .container {
       display: grid;
@@ -83,7 +84,13 @@
       height: 100%;
       margin: 0;
     }
-
+    .body_light {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e1e1e1 50%,#f5f5f5 100%);
+    color: #000;
+}
+.body_dark {
+    background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
+}
     .container {
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -204,17 +211,75 @@
         font-family: Arial, sans-serif;
         color: #fff; /* White text */
     }
+
+    .toggle-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        .toggle-button .card2 {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .toggle-button.dark .card2 {
+            transform: rotateY(180deg);
+        }
+        .toggle-button .card2 .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            font-size: 24px;
+        }
+        .toggle-button .card2 .sun-icon {
+            background-color: transparent;
+            color: black;
+        }
+        .toggle-button .card2 .moon-icon {
+            background-color: transparent;
+            color: white;
+            transform: rotateY(180deg);
+        }
 </style>
 </head>
 <body>
+<form method="POST" id="myForm" class="myForm">
+      <div class="select-wrapper">
+     <input type="hidden" name="is_dark" id="is_dark">
+      <div id="is_dark" class="options">
+{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
+{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
+{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
+        <!-- Add more sport options as needed -->
+      </div>
+    </div>
+</form>
 
+ <button class="toggle-button" id="toggleButton">
+        <div class="card2">
+            <div class="icon moon-icon"><i class="fas fa-moon"></i></div>
+            <div class="icon sun-icon"><i class="fas fa-sun"></i></div>
+        </div>
+    </button>
 <!-- Header text with passed arguments -->
-<div class="header-text">
+<div class="header-text" id="stats_title">
     <p>{{ team }} Stats - {{ league }}</p> <!-- Example of using passed argument -->
 </div>
 
 <!-- Back tab -->
-<a href="{%url 'home'%}" class="back-tab">Back</a>
+<a href="{%url 'home'%}" class="back-tab" onclick="set_G_dark_light()">Back</a>
 
 <!-- Tab buttons -->
 <div class="tab-buttons">
@@ -245,8 +310,30 @@
     <ul id="matchesList" class="matches-list"></ul> <!-- Placeholder for matches list -->
 </div>
 
+
+
 <script>
+    const body = document.body
+    G_is_dark = {{ is_dark | safe }};
+    const toggleButton = document.getElementById('toggleButton');
+    if(G_is_dark){
+        toggleButton.classList.toggle('dark');
+    }else {
+        body.classList.toggle("body_light");
+    }
+
+    toggleButton.addEventListener('click', function() {
+            G_is_dark = 1- G_is_dark;
+            text_color = G_is_dark  ? "white" : "black";
+            document.getElementById("stats_title").style.color = text_color
+            body.classList.toggle("body_light")
+            toggleButton.classList.toggle('dark');
+        {#toggleButton.classList.toggle('light');#}
+    });
+
+
     // JavaScript for tab functionality
+
     const tabs = document.querySelectorAll('.tab');
     const chartOptions = {
         scales: {
@@ -284,7 +371,12 @@
             }
         });
     }
+    function set_G_dark_light(){
 
+    const form = document.getElementById("myForm")
+        document.getElementById('is_dark').value = G_is_dark;
+        form.submit()
+    }
     function showMatchesTab() {
         // Dummy data for matches
         let stats = {{ stats| safe }};
@@ -366,6 +458,5 @@
     // Display first tab by default
     showTab(0);
 </script>
-
 </body>
 </html>
