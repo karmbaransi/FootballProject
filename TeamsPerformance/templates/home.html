@@ -184,16 +184,6 @@ body {
       </div>
     </div>
 
-  <div class="select-wrapper">
-     <input type="hidden" name="is_dark" id="is_dark">
-      <div id="is_dark" class="options">
-{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
-{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
-{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
-        <!-- Add more sport options as needed -->
-      </div>
-    </div>
-
     <div class="dropdown-wrapper">
       <select id="season" name="season">
       </select>
@@ -234,24 +224,28 @@ body {
     let sports = leagues_info["sports"];
     let sportsOptions = document.getElementById("sports");
     let G_sport = DEFAULT_SPORT;
-    let G_is_dark = {{ is_dark |safe }};
     let recently_called = {{ recently_called|safe }};
+    if(!localStorage.getItem("is_dark")){
+        localStorage.setItem("is_dark","1")
+    }
 
     //const body = document.body;
 
     const toggleButton = document.getElementById('toggleButton');
-    if(G_is_dark){
+    if(localStorage.getItem("is_dark")==="1"){
         toggleButton.classList.toggle('dark');
     }else {
         body.classList.toggle("body_light");
     }
 
     toggleButton.addEventListener('click', function() {
-            G_is_dark = 1- G_is_dark;
-            //body.classList.toggle("body_dark");
-            body.classList.toggle("body_light")
-            //body.classList.remove("body_light")
-            toggleButton.classList.toggle('dark');
+
+        let to_set =  localStorage.getItem("is_dark")==="1" ? "0" : "1";
+        localStorage.setItem("is_dark",to_set)
+        //body.classList.toggle("body_dark");
+        body.classList.toggle("body_light")
+        //body.classList.remove("body_light")
+        toggleButton.classList.toggle('dark');
         {#toggleButton.classList.toggle('light');#}
     });
 
@@ -422,14 +416,12 @@ document.getElementById("leagues").addEventListener("change", function() {
 
   function set_G_vars_on_click() {
     document.getElementById('pass_sports').value = G_sport;
-    document.getElementById('is_dark').value = G_is_dark;
 
   }
 
   function inner_cards_on_click(vars){
     const form = document.getElementById("myForm")
       document.getElementById("pass_sports").value = vars[0];
-        document.getElementById('is_dark').value = G_is_dark;
       sport_listener(vars[0]);
 
 
