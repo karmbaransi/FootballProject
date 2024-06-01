@@ -255,17 +255,7 @@
 </style>
 </head>
 <body>
-<form method="POST" id="myForm" class="myForm">
-      <div class="select-wrapper">
-     <input type="hidden" name="is_dark" id="is_dark">
-      <div id="is_dark" class="options">
-{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
-{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
-{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
-        <!-- Add more sport options as needed -->
-      </div>
-    </div>
-</form>
+
 
  <button class="toggle-button" id="toggleButton">
         <div class="card2">
@@ -279,7 +269,7 @@
 </div>
 
 <!-- Back tab -->
-<a href="{%url 'home'%}" class="back-tab" onclick="set_G_dark_light()">Back</a>
+<a href="{%url 'home'%}" class="back-tab">Back</a>
 
 <!-- Tab buttons -->
 <div class="tab-buttons">
@@ -314,17 +304,17 @@
 
 <script>
     const body = document.body
-    G_is_dark = {{ is_dark | safe }};
     const toggleButton = document.getElementById('toggleButton');
-    if(G_is_dark){
+    if(localStorage.getItem("is_dark") === "1"){
         toggleButton.classList.toggle('dark');
     }else {
         body.classList.toggle("body_light");
     }
 
     toggleButton.addEventListener('click', function() {
-            G_is_dark = 1- G_is_dark;
-            text_color = G_is_dark  ? "white" : "black";
+            let to_set =  localStorage.getItem("is_dark")==="1" ? "0" : "1";
+            localStorage.setItem("is_dark",to_set)
+            text_color = to_set  ? "white" : "black";
             document.getElementById("stats_title").style.color = text_color
             body.classList.toggle("body_light")
             toggleButton.classList.toggle('dark');
@@ -371,12 +361,8 @@
             }
         });
     }
-    function set_G_dark_light(){
 
-    const form = document.getElementById("myForm")
-        document.getElementById('is_dark').value = G_is_dark;
-        form.submit()
-    }
+
     function showMatchesTab() {
         // Dummy data for matches
         let stats = {{ stats| safe }};
