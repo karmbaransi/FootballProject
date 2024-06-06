@@ -8,6 +8,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+
+
+    #chartContainer {
+        width: 50%;
+        {#max-width: 700px;#}
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 600px; /* Set a height for the parent container */
+        background-color: rgba(84, 82, 70, 0.63);
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    #matchPieChart{
+        color: black;
+    }
+
     .container {
       display: grid;
       grid-template-columns: 1fr;
@@ -136,7 +155,7 @@
         top: 20px;
         left: 20px;
         z-index: 9999; /* Ensure it's above other elements */
-        background-color: rgba(255, 255, 0, 0.7);
+        background-color: rgba(255, 255, 0);
         color: #000;
         padding: 10px 20px;
         border-radius: 5px;
@@ -144,7 +163,7 @@
     }
 
     .back-tab:hover {
-        background-color: rgb(255, 255, 0);
+        background-color: rgba(255, 255, 0, 0.7);
     }
 
     .tab-buttons {
@@ -158,7 +177,7 @@
         margin: 0 10px;
         padding: 10px 20px;
         cursor: pointer;
-        background-color: rgba(255, 255, 0, 0.7);
+        background-color: rgba(255, 255, 0);
         border: none;
         border-radius: 5px;
         color: #000;
@@ -166,15 +185,16 @@
     }
 
     .tab-buttons button:hover {
-        background-color: rgb(255, 255, 0);
+        background-color: rgba(255, 255, 0, 0.7);
     }
 
     .tab {
         display: none;
         padding: 20px;
-        border: 1px solid #ccc;
+        {#border: 1px solid #ccc;#}
         border-radius: 5px;
         background-color: #ffffff;
+        {#background: transparent;#}
     }
 
     .tab h2 {
@@ -277,6 +297,7 @@
     <button onclick="showTab(1)">For Goals</button>
     <button onclick="showTab(2)">Against Goals</button>
     <button onclick="showTab(3)">Matches</button> <!-- New button for Matches tab -->
+    <button onclick="showTab(4)">Statistics</button> <!-- New button for Matches tab -->
 </div>
 
 <!-- Graphs -->
@@ -300,9 +321,17 @@
     <ul id="matchesList" class="matches-list"></ul> <!-- Placeholder for matches list -->
 </div>
 
+ <div class=tab>
+    <h2></h2>
+      <div id="chartContainer">
+    <canvas id="matchPieChart"></canvas>
+    </div>
+</div>
+
 
 
 <script>
+    let clicked_index = 0,pie_chart;
     const body = document.body
     const toggleButton = document.getElementById('toggleButton');
     if(localStorage.getItem("is_dark") === "1"){
@@ -318,6 +347,9 @@
             document.getElementById("stats_title").style.color = text_color
             body.classList.toggle("body_light")
             toggleButton.classList.toggle('dark');
+            if(clicked_index === 4){
+                showTab(clicked_index);
+            }
         {#toggleButton.classList.toggle('light');#}
     });
 
@@ -338,30 +370,91 @@
                     display: true,
                     labelString: 'Stats'
                 },
-            }]
-
+            }],
         },
 
     };
 
 
     function showTab(tabIndex) {
+        clicked_index = tabIndex
         tabs.forEach((tab, index) => {
             if (index === tabIndex) {
                 tab.style.display = 'block';
                 // Generate or update graph here based on the selected tab
                 if (tabIndex === 3) {
+                    tab.style.backgroundColor = '#ffffff';
                     // Show matches tab
                     showMatchesTab();
-                } else {
+                }
+                else if(tabIndex === 4){
+                    tab.style.backgroundColor = 'transparent';
+                    generatePieChart();
+                }
+                else {
+                     tab.style.backgroundColor = '#ffffff';
                     generateGraph(tabIndex);
                 }
             } else {
                 tab.style.display = 'none';
             }
         });
+
     }
 
+   function generatePieChart() {
+    const ctx = document.getElementById('matchPieChart').getContext('2d');
+    const stats = {{ stats|safe }};
+    wins = stats["wins"];
+    draws = stats["draws"];
+    losses = stats["losses"];
+    tot = wins + draws + losses;
+    let colors,legend_color;
+     if(localStorage.getItem("is_dark") === "1"){
+        colors = [ 'rgb(255,255,0)', 'rgb(178,178,38)', 'rgb(141,141,24)']
+         legend_color = "white"
+    }else {
+        colors = [ 'rgba(59,123,141,0.7)', 'rgba(63,112,124,0.7)', 'rgba(51,73,79,0.7)']
+         legend_color = "black"
+    }
+    const data = {
+        labels: ["Wins - " + (100* wins/tot).toFixed(2) + "%",
+                "Draws - " + (100*draws/tot).toFixed(2) + "%",
+                "Losses - " + (100 * losses/tot).toFixed(2) + "%"
+        ],
+        datasets: [{
+            data: [wins, draws, losses],
+            backgroundColor: colors,
+            borderColor: colors,
+            borderWidth: 1
+        }]
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        // changin the lagend colour
+        legend: {
+            labels: {
+                color: legend_color,
+            },
+        },
+    },
+
+    };
+    // Destroy the existing chart instance if it exists
+    if (window.myPieChart) {
+        window.myPieChart.destroy();
+    }
+
+    // Create a new chart instance
+    window.myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: options
+    });
+}
 
     function showMatchesTab() {
         // Dummy data for matches
