@@ -4,7 +4,7 @@ from TeamsPerformance.src.match import Match
 from TeamsPerformance.src.consts import *
 from datetime import datetime
 from TeamsPerformance.datebase.database import *
-
+wins,losses,draws = 0,0,0
 def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
     team_info = db_get_team_info(sport=sport, season=season, team=team,league=league)
     if team_info is None:
@@ -23,20 +23,27 @@ def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the 
     return  matches
 def api_get_local_league_stats(season,sport,league, team):
     def get_gained_points(match_info : Match):#FIXME:: penalties support + points to gain to the consts
+        global wins, draws, losses
         league_info = get_league_info()
         if match_info.result[0] is None:
             return 0
         if int(match_info.result[0]) >  int(match_info.result[1]):
+            wins+=1
             return league_info.point_rules["win"] if match_info.home == team else league_info.point_rules["lose"]
         elif int(match_info.result[0]) <  int(match_info.result[1]):
+            losses+=1
             return league_info.point_rules["lose"] if match_info.home == team else league_info.point_rules["win"]
         else:#draw
+            draws+=1
             return league_info.point_rules["draw"]
     def get_out_in_goals(match_info : Match):#FIXME:: penalties support
         if match_info.home == team:
             return int(match_info.result[0]),int(match_info.result[1])
         else:
             return int(match_info.result[1]),int(match_info.result[0])
+    global wins,draws,losses
+    wins, losses, draws = 0, 0, 0
+
     stats = {"points_graph": [],"in_goals" : [],"out_goals": [], "matches":[]}#FIXME:: (names + add to consts)
     matches =  api_get_matches_results(season,sport,league,team)
     curr_out_goals,curr_in_goals,curr_points = 0,0,0
@@ -53,6 +60,9 @@ def api_get_local_league_stats(season,sport,league, team):
             stats["out_goals"].append({"x": date, "y": curr_out_goals})
         stats["matches"].append(f"{match}")
         debug_info("(p,o,i)",(curr_points,curr_out_goals,curr_in_goals))
+    stats["wins"] = wins
+    stats["losses"] = losses
+    stats["draws"] = draws
     return stats
 
 def api_get_stats(season,sport, league, team):
