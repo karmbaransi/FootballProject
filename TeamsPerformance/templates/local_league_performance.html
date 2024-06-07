@@ -347,9 +347,7 @@
             document.getElementById("stats_title").style.color = text_color
             body.classList.toggle("body_light")
             toggleButton.classList.toggle('dark');
-            if(clicked_index === 4){
-                showTab(clicked_index);
-            }
+            showTab(clicked_index);
         {#toggleButton.classList.toggle('light');#}
     });
 
@@ -357,24 +355,6 @@
     // JavaScript for tab functionality
 
     const tabs = document.querySelectorAll('.tab');
-    const chartOptions = {
-        scales: {
-            xAxes: [{
-                type: 'time',
-                time: {
-                    unit: 'day'
-                },
-            }],
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Stats'
-                },
-            }],
-        },
-
-    };
-
 
     function showTab(tabIndex) {
         clicked_index = tabIndex
@@ -392,7 +372,7 @@
                     generatePieChart();
                 }
                 else {
-                     tab.style.backgroundColor = '#ffffff';
+                     tab.style.backgroundColor = 'transparent';
                     generateGraph(tabIndex);
                 }
             } else {
@@ -486,26 +466,61 @@
         let graphData = []; // Replace this with your actual data
         let graphElementId;
         let graph_type;
-        let Y_type,graph_color;
+        let Y_type,graph_color = 'rgba(0,108,131,0.7)';
         let stats = {{ stats| safe }};
+        let color = 'black';
+        if(localStorage.getItem("is_dark") === "1"){
+            color = 'white'
+            graph_color = 'rgb(255,255,0)';
+        }
+        const chartOptions = {
+            plugins: {
+        // changin the lagend colour
+        legend: {
+            labels: {
+                color: "white",
+                },
+            },
+        },
+
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'day'
+                },
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Stats',
+
+                },
+            }],
+            y :{grid : {color : color},
+                ticks: { color: color, beginAtZero: true },
+            },
+            x :{grid : {color : color} ,
+            ticks: { color: color, beginAtZero: true }},
+        },
+
+    };
+
         switch(tabIndex) {
             case 0:
                 graphElementId = 'gainedPGraph';
                 graph_type = "points_graph"
                 Y_type = "Points"
-                graph_color = "black"
                 break;
             case 1:
                 graphElementId = 'outGGraph';
                 graph_type = "out_goals"
                 Y_type = "Goals"
-                graph_color = "black"
                 break;
             case 2:
                 graphElementId = 'inGGraph';
                 graph_type = "in_goals"
                 Y_type = "Goals"
-                graph_color = "black"
                 break;
             default:
                 break;
