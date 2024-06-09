@@ -18,7 +18,7 @@
         justify-content: center;
         align-items: center;
         height: 600px; /* Set a height for the parent container */
-        background-color: rgba(84, 82, 70, 0.63);
+        background-color: rgba(143, 142, 140, 0.63);
         border-radius: 15px;
         padding: 20px;
     }
@@ -173,7 +173,7 @@
         margin-bottom: 20px;
     }
 
-    .tab-buttons button {
+    .tab-button {
         margin: 0 10px;
         padding: 10px 20px;
         cursor: pointer;
@@ -183,9 +183,23 @@
         color: #000;
         transition: background-color 0.3s;
     }
+    .tab-button_light{
+        margin: 0 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, border 0.3s ease; /* Added border transition */
+        background-color: rgba(59,123,141); /* Lighter yellow background */
+        color: #dadada; /* Black text */
+    }
 
-    .tab-buttons button:hover {
+
+    .tab-button:hover {
         background-color: rgba(255, 255, 0, 0.7);
+    }
+    .tab-button_light:hover {
+        background-color: rgba(51,73,79); /* Lighter yellow background */
     }
 
     .tab {
@@ -230,6 +244,10 @@
         font-size: 24px;
         font-family: Arial, sans-serif;
         color: #fff; /* White text */
+    }
+
+    .header-text_light {
+       color: #000
     }
 
     .toggle-button {
@@ -289,35 +307,31 @@
 </div>
 
 <!-- Back tab -->
-<a href="{%url 'home'%}" class="back-tab">Back</a>
+<a href="{%url 'home'%}" class="back-tab tab-button">Back</a>
 
 <!-- Tab buttons -->
 <div class="tab-buttons">
-    <button onclick="showTab(0)">Points</button>
-    <button onclick="showTab(1)">For Goals</button>
-    <button onclick="showTab(2)">Against Goals</button>
-    <button onclick="showTab(3)">Matches</button> <!-- New button for Matches tab -->
-    <button onclick="showTab(4)">Statistics</button> <!-- New button for Matches tab -->
+    <button class="tab-button" onclick="showTab(0)">Points</button>
+    <button class="tab-button" onclick="showTab(1)">For Goals</button>
+    <button class="tab-button" onclick="showTab(2)">Against Goals</button>
+    <button class="tab-button" onclick="showTab(3)">Matches</button> <!-- New button for Matches tab -->
+    <button class="tab-button" onclick="showTab(4)">Pie Chart</button> <!-- New button for Matches tab -->
 </div>
 
 <!-- Graphs -->
 <div class="tab">
-    <h2>Points</h2>
     <canvas id="gainedPGraph" width="400" height="120"></canvas>
 </div>
 
 <div class="tab">
-    <h2>For Goals</h2>
     <canvas id="outGGraph" width="400" height="120"></canvas>
 </div>
 
 <div class="tab">
-    <h2>Against Goals</h2>
     <canvas id="inGGraph" width="400" height="120"></canvas>
 </div>
 
 <div class="tab">
-    <h2>Matches</h2>
     <ul id="matchesList" class="matches-list"></ul> <!-- Placeholder for matches list -->
 </div>
 
@@ -338,13 +352,21 @@
         toggleButton.classList.toggle('dark');
     }else {
         body.classList.toggle("body_light");
+        let tabs_buttons = document.getElementsByClassName('tab-button')
+        for(let i = 0; i < tabs_buttons.length; i++) {
+            tabs_buttons[i].classList.toggle("tab-button_light");
+        }
+        document.getElementsByClassName("header-text")[0].classList.toggle("header-text_light")
     }
 
     toggleButton.addEventListener('click', function() {
+            let tabs_buttons = document.getElementsByClassName('tab-button')
+            for(let i = 0; i < tabs_buttons.length; i++) {
+                tabs_buttons[i].classList.toggle("tab-button_light");
+            }
+            document.getElementsByClassName("header-text")[0].classList.toggle("header-text_light")
             let to_set =  localStorage.getItem("is_dark")==="1" ? "0" : "1";
             localStorage.setItem("is_dark",to_set)
-            text_color = to_set  ? "white" : "black";
-            document.getElementById("stats_title").style.color = text_color
             body.classList.toggle("body_light")
             toggleButton.classList.toggle('dark');
             showTab(clicked_index);
@@ -469,8 +491,10 @@
         let Y_type,graph_color = 'rgba(0,108,131,0.7)';
         let stats = {{ stats| safe }};
         let color = 'black';
+        legend_color = "black"
         if(localStorage.getItem("is_dark") === "1"){
             color = 'white'
+            legend_color = "white"
             graph_color = 'rgb(255,255,0)';
         }
         const chartOptions = {
@@ -478,7 +502,7 @@
         // changin the lagend colour
         legend: {
             labels: {
-                color: "white",
+                color: legend_color,
                 },
             },
         },
@@ -515,12 +539,12 @@
             case 1:
                 graphElementId = 'outGGraph';
                 graph_type = "out_goals"
-                Y_type = "Goals"
+                Y_type = "For Goals"
                 break;
             case 2:
                 graphElementId = 'inGGraph';
                 graph_type = "in_goals"
-                Y_type = "Goals"
+                Y_type = "Against Goals"
                 break;
             default:
                 break;

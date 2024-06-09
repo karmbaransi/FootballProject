@@ -24,6 +24,7 @@ body {
 .body_dark {
     background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
 }
+
 .container {
     display: flex;
     justify-content: space-between; /* Space items evenly */
@@ -65,6 +66,11 @@ body {
   .dropdown-wrapper,
   .select-wrapper {
     margin-bottom: 20px;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      {#margin: 0 auto;#}
+      display: flex;
   }
 
   .options {
@@ -90,14 +96,33 @@ body {
   }
 
   .option.selected {
-    background-color: rgba(255, 255, 0); /* Lighter yellow background when selected */
-    border: 2px solid #fff; /* White border when selected */
+    border: 2px solid rgb(0, 0, 0); /* White border when selected */
     color: #000; /* Black text when selected */
+      background-color: rgb(187, 187, 82);
   }
 
   .option:hover {
     opacity: 0.7;
   }
+
+  .option_light {
+    padding: 15px 25px; /* Increased padding for longer content */
+    margin: 5px;
+    border-radius: 20px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border 0.3s ease; /* Added border transition */
+    background-color: rgba(59,123,141); /* Lighter yellow background */
+    color: #dadada; /* Black text */
+  }
+
+  .option_light.selected {
+    background-color: rgba(51,73,79); /* Lighter yellow background */
+    border: 2px solid #000000; /* White border when selected */
+    color: #dadada; /* Black text when selected */
+  }
+
 
   select {
     padding: 10px;
@@ -153,6 +178,28 @@ body {
             color: white;
             transform: rotateY(180deg);
         }
+
+    .loader {
+      border: 5px solid rgba(0, 0, 0, 0.75); /* Light grey */
+      border-top: 5px solid rgba(255, 255, 0); /* Blue */
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 2s linear infinite;
+        {#position: absolute;#}
+        {#left: 45.5%;#}
+        {#top : 105%;#}
+        {#transform: translate(-50%,-50%);#}
+    }
+    .loader_light{
+        border: 5px solid rgb(255, 255, 255);
+        border-top: 5px solid rgba(59,123,141);
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
 </style>
 </head>
 <body>
@@ -172,15 +219,11 @@ body {
 
 
   <div class="card">
-    <div class="title">Search Box</div>
+    <div class="title">◈</div>
 
     <div class="select-wrapper">
      <input type="hidden" name="sports" id="pass_sports">
       <div id="sports" class="options">
-{#      <select name="sports" id="pass_sports" style="display: none;"></select>#}
-{#        <div class="option" onclick="toggleSelected(this)">Football</div>#}
-{#        <div class="option" onclick="toggleSelected(this)">Basketball</div>#}
-        <!-- Add more sport options as needed -->
       </div>
     </div>
 
@@ -205,6 +248,9 @@ body {
           <button id="calculate_button" class="option" type="submit" onclick="set_G_vars_on_click()" style="pointer-events: none; opacity: 0.5" >Search</button>
         </div>
     </div>
+    <div class="select-wrapper">
+            <div id="loader" class="loader" style="display: none"></div>
+      </div>
 
 </div>
 
@@ -232,14 +278,13 @@ body {
     //const body = document.body;
 
     const toggleButton = document.getElementById('toggleButton');
-    if(localStorage.getItem("is_dark")==="1"){
-        toggleButton.classList.toggle('dark');
-    }else {
-        body.classList.toggle("body_light");
-    }
 
     toggleButton.addEventListener('click', function() {
-
+        let z = document.getElementsByClassName("option");
+        console.log(z)
+        for(let i = 0; i < 3; i++) {
+            z[i].classList.toggle("option_light")
+        }
         let to_set =  localStorage.getItem("is_dark")==="1" ? "0" : "1";
         localStorage.setItem("is_dark",to_set)
         //body.classList.toggle("body_dark");
@@ -247,6 +292,7 @@ body {
         //body.classList.remove("body_light")
         toggleButton.classList.toggle('dark');
         {#toggleButton.classList.toggle('light');#}
+        document.getElementById("loader").classList.toggle("loader_light")
     });
 
     let most_popular_card = document.getElementById("most_popular");
@@ -308,6 +354,19 @@ body {
         });
     }
 
+     //dark light mode
+    if(localStorage.getItem("is_dark")==="1"){
+        toggleButton.classList.toggle('dark');
+    }else {
+        body.classList.toggle("body_light");
+        let z = document.getElementsByClassName("option");
+        console.log(z)
+        for(let i = 0; i < 3; i++) {
+            z[i].classList.toggle("option_light")
+        }
+        document.getElementById("loader").classList.toggle("loader_light")
+    }
+
      function sport_listener(sport){
         G_sport = sport;
 
@@ -358,7 +417,6 @@ body {
             option.text = league;
             leaguesDropdown.appendChild(option);
         }
-
 
 
 document.getElementById("season").addEventListener("change", function () {
@@ -416,12 +474,23 @@ document.getElementById("leagues").addEventListener("change", function() {
 
   function set_G_vars_on_click() {
     document.getElementById('pass_sports').value = G_sport;
+    document.getElementById("loader").style = ""
+      localStorage.setItem("sport",G_sport)
+     localStorage.setItem("season",document.getElementById('season').value)
+     localStorage.setItem("league",document.getElementById('leagues').value)
+     localStorage.setItem("team",document.getElementById('team_name').value)
 
   }
 
   function inner_cards_on_click(vars){
+      document.getElementById("loader").style = ""
     const form = document.getElementById("myForm")
       document.getElementById("pass_sports").value = vars[0];
+     localStorage.setItem("sport",vars[0])
+     localStorage.setItem("season",vars[1])
+     localStorage.setItem("league",vars[2])
+     localStorage.setItem("team",vars[3])
+
       sport_listener(vars[0]);
 
 
