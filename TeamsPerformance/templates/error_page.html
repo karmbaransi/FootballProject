@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error Page</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            color: #fff; /* White text */
+            color: white; /* White text */
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #3d3d3d 0%,#000000 50%,#3d3d3d 100%);
@@ -15,10 +17,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            {#color: white;#}
+        }
+        .body_light {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e1e1e1 50%,#f5f5f5 100%);
+            color: #000;
         }
         .error-container {
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: rgba(143, 142, 140, 0.63);
+            {#border: 1px solid #ddd;#}
             border-radius: 5px;
             padding: 20px;
             max-width: 400px;
@@ -41,7 +48,6 @@
             cursor: pointer;
         }
         .message{
-            color: black;
             font-weight: bold;
         }
         .back-tab {
@@ -55,21 +61,100 @@
         border-radius: 5px;
         text-decoration: none;
         }
-
+        .back-tab_light{
+        background-color: rgba(59,123,141); /* Lighter yellow background */
+        color: #dadada; /* Black text */
+        }
     .back-tab:hover {
         background-color: rgba(255, 255, 0,0.7);
     }
+    .back-tab_light:hover{
+        background-color: rgba(51,73,79); /* Lighter yellow background */
+
+    }
+        .toggle-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        .toggle-button .card2 {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .toggle-button.dark .card2 {
+            transform: rotateY(180deg);
+        }
+        .toggle-button .card2 .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            font-size: 24px;
+        }
+        .toggle-button .card2 .sun-icon {
+            background-color: transparent;
+            color: black;
+        }
+        .toggle-button .card2 .moon-icon {
+            background-color: transparent;
+            color: white;
+            transform: rotateY(180deg);
+        }
     </style>
 </head>
 <body>
+     <button class="toggle-button" id="toggleButton">
+        <div class="card2">
+            <div class="icon moon-icon"><i class="fas fa-moon"></i></div>
+            <div class="icon sun-icon"><i class="fas fa-sun"></i></div>
+        </div>
+</button>
     <div class="error-container">
         <h2 class="message">Error Page</h2>
         <p class="error-message">An error occurred while processing your request.</p>
-        <p class="message">Request: {{ sport }} • {{ season }} • {{ league }} • {{ team }}</p>
+        <p class="message" id="request"></p>
         <p class="message">{{ err_msg }}</p>
         <!-- Back tab -->
-        <a href="{%url 'home'%}" class="back-tab">Back</a>
+        <a href="{%url 'home'%}" class="back-tab" id="back_tab">Back</a>
     </div>
 
+    <script>
+    const toggleButton = document.getElementById('toggleButton');
+    const body = document.body;
+    if(localStorage.getItem("is_dark")==="1"){
+        toggleButton.classList.toggle('dark');
+    }else
+    {
+        body.classList.toggle("body_light");
+        document.getElementById("back_tab").classList.toggle("back-tab_light")
+    }
+    toggleButton.addEventListener('click', function() {
+
+        let to_set =  localStorage.getItem("is_dark")==="1" ? "0" : "1";
+        localStorage.setItem("is_dark",to_set)
+        body.classList.toggle("body_light")
+        toggleButton.classList.toggle('dark');
+        document.getElementById("back_tab").classList.toggle("back-tab_light")
+
+    });
+
+        let sport = localStorage.getItem("sport")
+        let season = localStorage.getItem("season")
+        let league = localStorage.getItem("league")
+        let team = localStorage.getItem("team")
+        document.getElementById("request").innerText = "Request: " +  sport + " • " + season + " • " +   league + " • " + team
+    </script>
 </body>
 </html>
