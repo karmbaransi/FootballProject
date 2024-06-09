@@ -18,6 +18,7 @@ from TeamsPerformance.src.league import League
 from TeamsPerformance.src.datefixer import DateFixer
 from TeamsPerformance.src.custom_exception import LoggableException
 from selenium.webdriver.chrome.service import Service
+from copy import deepcopy
 
 import pdb
 DEBUG_MODE = True
@@ -131,13 +132,24 @@ def get_matches(season, sport, league, team,upcoming_date=None):
         if upcoming_date:
             stop_date = upcoming_date
         to_ret = []
+        elems_dict = []
         while True:
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
+            while web_elem in elems_dict:
+                print("elm is in dict")
+                driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
+                web_elem = driver.switch_to.active_element
+                if web_elem == elems_dict[-1]:
+                    print("sleeping ,match dict", get_match_dict(web_elem))
+                    sleep(7)
+
+            elems_dict.append(web_elem)
+
             match_dict = get_match_dict(web_elem)
             if match_dict is None:
                 continue
-            match_dict["date"] = date_fixer.fix_Date(match_dict["date"])
+            match_dict["date"] = deepcopy(date_fixer.fix_Date(match_dict["date"]))
             debug_info("get_local_matches , match",match_dict)
             if match_dict["date"] > end_date:
                 continue
@@ -145,6 +157,9 @@ def get_matches(season, sport, league, team,upcoming_date=None):
                 break
             if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 to_ret.append(match_dict)
+
+
+
         return to_ret
 
     global league_info

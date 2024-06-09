@@ -47,16 +47,16 @@
                             "Fulham",
                             "Liverpool",
                             "Luton Town",
-                            "Manchester City",
-                            "Manchester United",
-                            "Newcastle United",
-                            "Nottingham Forest",
+                            "Man City",
+                            "Man United",
+                            "Newcastle",
+                            "Nottm Forest",
                             "Sheffield United",
                             "Tottenham",
-                            "West Ham",
+                                "West Ham",
                             "Wolves"
                         ],
-                        "start_date": "12 Aug 23",
+                        "start_date": "11 Aug 23",
                         "end_date": "19 May 24"
                     },
                     "BundesLiga": {
@@ -82,8 +82,8 @@
                             "Werder",
                             "Wolfsburg"
                         ],
-                        "start_date": "18 Aug 23",
-                        "end_date": "18 May 24"
+                        "start_date": "5 Aug 23",
+                        "end_date": "27 May 24"
                     },
                     "Serie A": {
                         "format": "points",
@@ -184,13 +184,13 @@
                             "Crystal Palace",
                             "Everton",
                             "Fulham",
-                            "Leeds",
+                            "Leeds United",
                             "Leicester City",
                             "Liverpool",
-                            "Manchester City",
-                            "Manchester United",
-                            "Newcastle United",
-                            "Nottingham Forest",
+                            "Man City",
+                            "Man United",
+                            "Newcastle",
+                            "Nottm Forest",
                             "Southampton",
                             "Tottenham",
                             "West Ham",
