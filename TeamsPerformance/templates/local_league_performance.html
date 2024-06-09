@@ -238,12 +238,19 @@
         transition: background-color 0.3s ease;
     }
 
-    .header-text {
+    .header-text{
         text-align: center;
         margin-bottom: 20px;
         font-size: 24px;
         font-family: Arial, sans-serif;
         color: #fff; /* White text */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .header-text >* {
+        margin: 10px;
     }
 
     .header-text_light {
@@ -290,6 +297,9 @@
             color: white;
             transform: rotateY(180deg);
         }
+        .star_checked {
+          color: orange;
+        }
 </style>
 </head>
 <body>
@@ -304,6 +314,7 @@
 <!-- Header text with passed arguments -->
 <div class="header-text" id="stats_title">
     <p>{{ team }} Stats - {{ league }}</p> <!-- Example of using passed argument -->
+    <button id="star" class="fa fa-star" onclick="fill_star()"></button>
 </div>
 
 <!-- Back tab -->
@@ -345,6 +356,10 @@
 
 
 <script>
+    let sport = "{{ sport | safe }}";
+    let season = "{{ season | safe }}";
+    let league = "{{ league | safe }}";
+    let team = "{{ team | safe }}";
     let clicked_index = 0,pie_chart;
     const body = document.body
     const toggleButton = document.getElementById('toggleButton');
@@ -357,6 +372,10 @@
             tabs_buttons[i].classList.toggle("tab-button_light");
         }
         document.getElementsByClassName("header-text")[0].classList.toggle("header-text_light")
+    }
+
+    if(localStorage.getItem("favorites").indexOf(sport + "," + season + "," + league + "," + team) !== -1){
+        document.getElementById("star").classList.toggle("star_checked")
     }
 
     toggleButton.addEventListener('click', function() {
@@ -373,6 +392,17 @@
         {#toggleButton.classList.toggle('light');#}
     });
 
+    function fill_star(){
+        let info = sport + "," + season + "," + league + "," + team;
+        document.getElementById("star").classList.toggle("star_checked")
+        let favorites = localStorage.getItem("favorites")
+        let index = favorites.indexOf(info);
+        if (index === -1) {
+            localStorage.setItem("favorites",info + ";" + favorites)
+        } else {
+            localStorage.setItem("favorites",favorites.replace(info + ";",""))
+        }
+    }
 
     // JavaScript for tab functionality
 

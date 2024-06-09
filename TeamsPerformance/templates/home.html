@@ -254,8 +254,8 @@ body {
 
 </div>
 
-  <div class="card" id="most_popular">
-    <div class="title">Most Popular</div>
+  <div class="card" id="favorites">
+    <div class="title">Favorites ★</div>
     </div>
   </div>
 </div>
@@ -266,7 +266,6 @@ body {
     const DEFAULT_SEASON = "23-24"
     const DEFAULT_SPORT = "Football"
     let leagues_info = {{ leagues_info|safe }};
-    let most_popular = leagues_info["MostPopular"]
     let sports = leagues_info["sports"];
     let sportsOptions = document.getElementById("sports");
     let G_sport = DEFAULT_SPORT;
@@ -274,8 +273,11 @@ body {
     if(!localStorage.getItem("is_dark")){
         localStorage.setItem("is_dark","1")
     }
-
+    if(!localStorage.getItem("favorites")){
+        localStorage.setItem("favorites","")
+    }
     //const body = document.body;
+    console.log("localstorage favorits", localStorage.getItem("favorites"))
 
     const toggleButton = document.getElementById('toggleButton');
 
@@ -295,22 +297,34 @@ body {
         document.getElementById("loader").classList.toggle("loader_light")
     });
 
-    let most_popular_card = document.getElementById("most_popular");
-    for (let i=0 ; i < most_popular.length; i++) {
+    let favorites_card = document.getElementById("favorites");
+    favorites = localStorage.getItem("favorites").split(";")
+    console.log("favorites after split:\n ",favorites)
+    for (let i = 0; i < 4; i++) {
         let inner_card = document.createElement('div');
         const header = document.createElement('h3');
-        header.innerHTML = most_popular[i][3];
         const info = document.createElement('p');
-        info.innerHTML = most_popular[i][2] + " • " + most_popular[i][1];
+        let team_info;
+        if (favorites[i]) {
+            //fe fav
+            team_info = favorites[i].split(",")
+            header.innerHTML = team_info[3];
+            info.innerHTML = team_info[2] + " • " + team_info[1];
+        } else {
+            //fsh fav
+            header.innerHTML = "";
+            info.innerHTML = "";
+            inner_card.style = "pointer-events: none; opacity: 0.5";
+        }
         inner_card.appendChild(header);
         inner_card.appendChild(info);
         inner_card.classList.add("inner-card");
         inner_card.addEventListener('click', () => {
-            inner_cards_on_click(most_popular[i])
+            inner_cards_on_click(team_info)
         });
-        most_popular_card.appendChild(inner_card);
-
+        favorites_card.appendChild(inner_card);
     }
+
 
     let recently_called_card = document.getElementById("recently_called");
     for (let i=0 ; i < recently_called.length; i++) {

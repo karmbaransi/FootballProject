@@ -330,9 +330,5 @@
     "points": {
         "Football": {"win":  3, "draw":  1, "lose": 0},
         "Basketball": {"win":  2, "draw":  "null", "lose": 1}
-    },
-    "MostPopular": [["Football","23-24","Laliga","Real Madrid"],
-                    ["Football","23-24","Laliga","Barcelona"],
-                    ["Football","23-24","Premier League","Arsenal"],
-                    ["Basketball","23-24","NBA","Lakers"]]
+    }
 }
