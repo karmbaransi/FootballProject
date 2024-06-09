@@ -27,15 +27,31 @@ def api_get_local_league_stats(season,sport,league, team):
         league_info = get_league_info()
         if match_info.result[0] is None:
             return 0
-        if int(match_info.result[0]) >  int(match_info.result[1]):
-            wins+=1
-            return league_info.point_rules["win"] if match_info.home == team else league_info.point_rules["lose"]
-        elif int(match_info.result[0]) <  int(match_info.result[1]):
-            losses+=1
-            return league_info.point_rules["lose"] if match_info.home == team else league_info.point_rules["win"]
-        else:#draw
-            draws+=1
+        if int(match_info.result[0]) == int(match_info.result[1]):
+            draws += 1
             return league_info.point_rules["draw"]
+        if int(match_info.result[0]) > int(match_info.result[1]):
+            if match_info.home == team:
+                wins += 1
+                return league_info.point_rules["win"]
+            losses += 1
+            return league_info.point_rules["lose"]
+        else:
+            if match_info.home == team:
+                losses += 1
+                return league_info.point_rules["lose"]
+            wins += 1
+            return league_info.point_rules["win"]
+        #
+        # if int(match_info.result[0]) >  int(match_info.result[1]):
+        #     wins+= 1
+        #     return league_info.point_rules["win"] if match_info.home == team else league_info.point_rules["lose"]
+        # elif int(match_info.result[0]) <  int(match_info.result[1]):
+        #     losses+=1
+        #     return league_info.point_rules["lose"] if match_info.home == team else league_info.point_rules["win"]
+        # else:#draw
+        #     draws+=1
+        #     return league_info.point_rules["draw"]
     def get_out_in_goals(match_info : Match):#FIXME:: penalties support
         if match_info.home == team:
             return int(match_info.result[0]),int(match_info.result[1])
