@@ -132,6 +132,7 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             stop_date = upcoming_date
         to_ret = []
         while True:
+
             driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             web_elem =  driver.switch_to.active_element
             match_dict = get_match_dict(web_elem)
@@ -145,6 +146,10 @@ def get_matches(season, sport, league, team,upcoming_date=None):
                 break
             if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 to_ret.append(match_dict)
+            while True:
+                is_at_top = driver.execute_script("return window.scrollY === 0;")
+                if is_at_top:
+                    break
         return to_ret
 
     global league_info
