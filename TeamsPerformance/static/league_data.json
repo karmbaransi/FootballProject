@@ -53,7 +53,7 @@
                             "Nottm Forest",
                             "Sheffield United",
                             "Tottenham",
-                                "West Ham",
+                            "West Ham",
                             "Wolves"
                         ],
                         "start_date": "11 Aug 23",
@@ -64,7 +64,7 @@
                         "name": "BundesLiga",
                         "teams": [
                             "Augsburg",
-                            "Bayer Leverkusen",
+                            "Leverkusen",
                             "Bayern",
                             "VfL Bochum",
                             "Dortmund",
@@ -137,7 +137,7 @@
                             "Toulouse"
                         ],
                         "start_date": "12 Aug 23",
-                        "end_date": "18 May 24"
+                        "end_date": "19 May 24"
                     }
                 }
             },

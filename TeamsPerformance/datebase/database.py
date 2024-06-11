@@ -31,6 +31,7 @@ def db_update_team_info(sport,season,team,upcoming_match,league):
     )
 
 def db_add_matches(sport, season, league,matches):
+    print("matches are : ", matches)
     for match in matches:
         print(f"adding match: {match} to DB, res {match.result}")
         result = "None" if  match.result is None else match.result
