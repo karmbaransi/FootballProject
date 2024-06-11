@@ -157,9 +157,6 @@ def get_matches(season, sport, league, team,upcoming_date=None):
                 break
             if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 to_ret.append(match_dict)
-
-
-
         return to_ret
 
     global league_info

@@ -8,9 +8,12 @@ wins,losses,draws = 0,0,0
 def api_get_matches_results(season,sport,league,team):#FIXME add checkup in the DB
     team_info = db_get_team_info(sport=sport, season=season, team=team,league=league)
     if team_info is None:
+        print("Entering get matches (first one)")
         matches = get_matches(season, sport, league, team)
     else:
+        print("Entering get matches (sec one)")
         matches = get_matches(season, sport, league, team,upcoming_date=team_info.upcoming_match)
+    print("Got to db_add_matches")
     db_add_matches(sport=sport,season=season,league=league,matches=matches)
     matches = db_get_matches(sport=sport,season=season,league=league,team=team)
     up_coming = datetime.max
