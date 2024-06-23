@@ -14,4 +14,4 @@ DATE_FORMAT_STR = '%d %b %y'
 LEAGUE_DATA_JSON_PATH = "TeamsPerformance/static/league_data.json"
 SEE_MORE_NOT_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='LEAGUE_MATCHES']"
 SEE_MORE_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='TEAM_MATCHES']"
-LAST_WIDGET_YEAR = 24
+LAST_WIDGET_YEAR = 25
