@@ -3,7 +3,8 @@ FUTURE_INFO_CLASS_NAME = "imspo_mt__date"
 COMPETITION_CLASS_NAME = "imspo_mt__lg-st-co"
 VIDEO_CLASS_NAME = "imspo_mt__ndl-p"
 EMPTY_TILE_CLASS_NAME = "liveresults-sports-immersive__empty-tile"
-TEAMS_INFO_CLASS_NAME = "liveresults-sports-immersive__hide-element"
+# TEAMS_INFO_CLASS_NAME = "liveresults-sports-immersive__hide-element"
+TEAMS_INFO_CLASS_NAME = "ellipsisize"
 WIDGET_CLASS_NAME = "imspo_mt__mtc-no"
 RESULTS_INFO_CLASS_NAME = "imspo_mt__t-sc"
 SPAN_NAME = ".//span"
@@ -14,4 +15,4 @@ DATE_FORMAT_STR = '%d %b %y'
 LEAGUE_DATA_JSON_PATH = "TeamsPerformance/static/league_data.json"
 SEE_MORE_NOT_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='LEAGUE_MATCHES']"
 SEE_MORE_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='TEAM_MATCHES']"
-LAST_WIDGET_YEAR = 25
+LAST_WIDGET_YEAR_DICT = {"Premier League": 25,"Laliga": 25,"BundesLiga": 24,"Serie A": 24,"Ligue 1": 25}
