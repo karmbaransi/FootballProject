@@ -43,6 +43,12 @@ def is_local_league(web_elm,home: str , away: str) -> bool:
 
 def get_match_dict(web_elm):
     debug_info("get_match", "called")
+
+    # check if this is an empty widget or the widget is a video
+    if len(web_elm.find_elements(By.CLASS_NAME, EMPTY_TILE_CLASS_NAME)):
+        print("caught an empty tile")
+        return None
+
     #check if this is an empty widget or the widget is a video
     if len(web_elm.find_elements(By.CLASS_NAME, WIDGET_CLASS_NAME)) == 0:
         debug_info("dict is None", "")
@@ -51,9 +57,9 @@ def get_match_dict(web_elm):
     #returns home : str , away : str or none if no teams in this web elem\
     def get_teams() -> (str,str):
         teams = web_elm.find_elements(By.CLASS_NAME, TEAMS_INFO_CLASS_NAME)
-        debug_info("TEAMS",(teams[HOME_IDX].text, teams[AWAY_IDX].text))
+        debug_info("TEAMS",(teams[HOME_IDX].text.split("\n")[0], teams[AWAY_IDX].text.split("\n")[0]))
         # teams
-        return teams[HOME_IDX].text, teams[AWAY_IDX].text
+        return teams[HOME_IDX].text.split("\n")[0], teams[AWAY_IDX].text.split("\n")[0]
 
     def get_result():
         results = web_elm.find_elements(By.CLASS_NAME, RESULTS_INFO_CLASS_NAME)
@@ -109,6 +115,7 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
             return WebDriverWait(driver, MAX_WAIT_TIME).until(
             EC.presence_of_element_located((by_elm, elm)))
     except Exception as e:
+        print("exception :::: ",e)
         raise LoggableException(f"Please check your internet connection and the json syntax")
 
 def start_session(driver,season, sport, league, team):
@@ -126,7 +133,7 @@ def start_session(driver,season, sport, league, team):
 def get_matches(season, sport, league, team,upcoming_date=None):
     def get_local_matches():
         sleep(5)
-        date_fixer = DateFixer()
+        date_fixer = DateFixer(league)
         end_date = datetime.strptime(league_info.end_date,DATE_FORMAT_STR)
         stop_date = datetime.strptime(league_info.start_date,DATE_FORMAT_STR)
         if upcoming_date:
@@ -184,17 +191,22 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     # options.add_argument('--ignore-certificate-errors')
     # options.add_argument('--allow-running-insecure-content')
     # # options.add_argument("--disable-extensions")
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument("--accept-lang=en_UK")
+
+    # options.add_argument('--headless')
+    # options.add_argument('--disable-gpu')
+    # options.add_argument("--accept-lang=en_UK")
     driver = webdriver.Chrome(options=options)
-    # driver.minimize_window()
+    driver.minimize_window()
     start_session(driver,season=season, sport=sport, league=league, team=team)
+    sleep(3)
 
-
-    see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
-    see_more.send_keys(Keys.ENTER)
-
+    # see_more = load_and_wait_wrapper(driver, By.XPATH, SEE_MORE_LOCAL_LEAGUES_XPATH)
+    while True:
+        driver.switch_to.active_element.send_keys(Keys.TAB)
+        web_elem = driver.switch_to.active_element
+        if web_elem.text in ["More matches","See more"]:
+            web_elem.send_keys(Keys.ENTER)
+            break
     to_ret = reversed([Match(match_dict) for match_dict in get_local_matches()])
     return to_ret
 

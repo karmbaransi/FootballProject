@@ -4,8 +4,8 @@ from TeamsPerformance.src.consts import *
 #when iterating the wedgites we pass each widget date to the date fixer and it returns datime obj for the date
 #this class solves year issue
 class DateFixer:
-    def __init__(self):
-        self.year = LAST_WIDGET_YEAR
+    def __init__(self, league):
+        self.year = LAST_WIDGET_YEAR_DICT[league]
         self.jan_pass_flag = False
     def fix_Date(self,date : str):
         if "jan" in date.lower():
