@@ -37,7 +37,9 @@ def is_local_league(web_elm,home: str , away: str) -> bool:
     #this class exists only for  champions league and local cup.
     competition = web_elm.find_elements(By.CLASS_NAME, COMPETITION_CLASS_NAME)
     if len(competition):
-        return False
+        print("helper", competition[0].text)
+        if "NBA Cup" not in competition[0].text:
+            return False
     # friendly matches are never between teams in the same league (when the class doesn't exist the  match is league or friendly)
     return (home in league_info.teams) and (away in league_info.teams)
 

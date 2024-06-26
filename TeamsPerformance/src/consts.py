@@ -15,4 +15,4 @@ DATE_FORMAT_STR = '%d %b %y'
 LEAGUE_DATA_JSON_PATH = "TeamsPerformance/static/league_data.json"
 SEE_MORE_NOT_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='LEAGUE_MATCHES']"
 SEE_MORE_LOCAL_LEAGUES_XPATH = "//li[@data-tab_type='TEAM_MATCHES']"
-LAST_WIDGET_YEAR_DICT = {"Premier League": 25,"Laliga": 25,"BundesLiga": 24,"Serie A": 24,"Ligue 1": 25}
+LAST_WIDGET_YEAR_DICT = {"Premier League": 25,"Laliga": 25,"BundesLiga": 24,"Serie A": 24,"Ligue 1": 25, "NBA": 24}
