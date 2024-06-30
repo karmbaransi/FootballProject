@@ -45,7 +45,6 @@ def is_local_league(web_elm,home: str , away: str) -> bool:
 
 def get_match_dict(web_elm):
     debug_info("get_match", "called")
-
     # check if this is an empty widget or the widget is a video
     if len(web_elm.find_elements(By.CLASS_NAME, EMPTY_TILE_CLASS_NAME)):
         print("caught an empty tile")
@@ -74,7 +73,8 @@ def get_match_dict(web_elm):
         info = web_elm.find_elements(By.CLASS_NAME, PASSED_DATE_INFO_CLASS_NAME)
         debug_info("info", info)
         if len(info) == 1:  # for passed games
-            date = info[0].find_element(By.XPATH, SPAN_NAME).text
+            date = info[0].find_element(By.XPATH, SPAN_NAME).text.replace(",", "")
+            print("new date str :: ",date)
             debug_info("get_date():date",date)
             if YESTERDAY_STR in date.lower():
                 date = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT_STR)
@@ -102,10 +102,12 @@ def get_match_dict(web_elm):
 
     #result
     match_dict["result"] = get_result()
-
     #date
     match_dict["date"] = get_date()
+    print("match_dict", match_dict)
 
+    if '' in list(match_dict.values()):
+        return None
     return match_dict
 
 def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
@@ -121,8 +123,15 @@ def load_and_wait_wrapper(driver, by_elm, elm,multiple = False):
         raise LoggableException(f"Please check your internet connection and the json syntax")
 
 def start_session(driver,season, sport, league, team):
-
     driver.get(URL)
+    sleep(3)
+    for i in range(20):
+        driver.switch_to.active_element.send_keys(Keys.TAB)
+        web_elem = driver.switch_to.active_element
+        if web_elem.text in ["Accept all"]:
+            web_elem.send_keys(Keys.ENTER)
+            break
+    sleep(3)
     # driver.maximize_window()
     search_box = driver.find_element(By.NAME, "q")
     search_query = f"{team} {sport} matches in {league}"
@@ -143,22 +152,30 @@ def get_matches(season, sport, league, team,upcoming_date=None):
         to_ret = []
         elems_dict = []
         while True:
-            driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
+            print("1")
             web_elem =  driver.switch_to.active_element
+            print("2")
+            print("web elem class::", web_elem.get_attribute('class'))
+            if web_elem.get_attribute('class') != WIDGET_IDENTIFIER:
+                elems_dict.append(web_elem)
             while web_elem in elems_dict:
                 print("elm is in dict")
                 driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
+                print("3")
                 web_elem = driver.switch_to.active_element
+                print("4")
                 if web_elem == elems_dict[-1]:
-                    print("sleeping ,match dict", get_match_dict(web_elem))
+                    print("sleeping ,match dict")# , get_match_dict(web_elem))
                     sleep(7)
 
             elems_dict.append(web_elem)
-
+            print("5")
             match_dict = get_match_dict(web_elem)
+            print("6")
             if match_dict is None:
                 continue
             match_dict["date"] = deepcopy(date_fixer.fix_Date(match_dict["date"]))
+            print("7")
             debug_info("get_local_matches , match",match_dict)
             if match_dict["date"] > end_date:
                 continue
@@ -166,6 +183,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
                 break
             if is_local_league(web_elem,match_dict["home"],match_dict["away"]):
                 to_ret.append(match_dict)
+            sleep(0.1)
+            driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
         return to_ret
 
     global league_info
@@ -183,7 +202,8 @@ def get_matches(season, sport, league, team,upcoming_date=None):
             return []
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en_UK'})
-
+    options.add_argument("--disable-notifications")
+    options.add_argument("disable-infobars")
     # user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
     # options = webdriver.ChromeOptions()
@@ -194,11 +214,11 @@ def get_matches(season, sport, league, team,upcoming_date=None):
     # options.add_argument('--allow-running-insecure-content')
     # # options.add_argument("--disable-extensions")
 
-    # options.add_argument('--headless')
-    # options.add_argument('--disable-gpu')
-    # options.add_argument("--accept-lang=en_UK")
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument("--accept-lang=en_UK")
     driver = webdriver.Chrome(options=options)
-    driver.minimize_window()
+    # driver.minimize_window()
     start_session(driver,season=season, sport=sport, league=league, team=team)
     sleep(3)
 
